@@ -1,28 +1,39 @@
 #ifndef FLAG_H
 #define FLAG_H
 
-#define Active 0
-#define B_e    1
-#define B_n    2
-#define B_t    3
+/* cell and boundary indices flags */
+#define ACT   0
+#define F_E   1
+#define F_N   9
+#define F_T   17
 
-#define D_e    1
-#define N_e    2
-#define D_n    3
-#define N_n    4
-#define D_t    5
-#define N_t    6
+/* boundary type flags */
+#define D_U   1
+#define N_U   2
+#define D_P   3
+#define N_P   4
 
-unsigned int set_flag(unsigned int f, int position) {
-    return f | (1u << position);
+/* flag operations */
+#define FACE  255u
+
+unsigned int see_face(unsigned int f, int face) {
+    return (f >> face) & FACE;
 }
 
-unsigned int see_flag(unsigned int f, int position) {
+unsigned int set_face(unsigned int f, int face, unsigned int value) {
+    f = f & ~(FACE << face);
+    f = f | (value << face);
+    return f;
+}
+
+unsigned int set_bit(unsigned int f, int position, unsigned int value) {
+    f = f & ~(1u << position);
+    f = f | (value << position);
+    return f;
+}
+
+unsigned int see_bit(unsigned int f, int position) {
     return (f >> position) & 1u;
-}
-
-unsigned int clear_flag(unsigned int f, int position) {
-    return f & ~(1u << position);
 }
 
 #endif

@@ -1,6 +1,16 @@
 #ifndef TOPO_H
 #define TOPO_H
 
+#define _E 0
+#define _N 1
+#define _T 2
+#define _X 0
+#define _Y 1
+#define _Z 2
+#define _U 0
+#define _V 1
+#define _W 2
+
 /* domain */
 const double X0   = 0.0;
 const double Y0   = 0.0;
@@ -21,18 +31,8 @@ const int    J1   = J0 - 1 + NY;
 const int    K0   = 2;
 const int    K1   = K0 - 1 + NZ;
 
-/* square cylinder */
-const double X0sq = 9.5;
-const double X1sq = 10.5;
-const double Y0sq = 9.5;
-const double Y1sq = 10.5;
-const double Z0sq = Z0;
-const double Z1sq = Z1;
-const int    I0sq = 192;
-const int    I1sq = 211;
-const int    J0sq = 192;
-const int    J1sq = 211;
-const int    K0sq = K0;
-const int    K1sq = K1;
+void topo_init(
+    int F[NNX][NNY][NNZ]
+);
 
 #endif
