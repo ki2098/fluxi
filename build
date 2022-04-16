@@ -1,0 +1,6 @@
+#!/usr/bin/bash
+
+g++ -c src/bc.cpp -o obj/bc.o
+g++ -c src/tp.cpp -o obj/tp.o
+g++ -c src/main.cpp -o obj/main.o
+g++ -o bin/fluo obj/bc.o obj/tp.o obj/main.o 
