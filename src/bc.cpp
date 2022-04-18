@@ -113,7 +113,7 @@ void _outflow(
 }
 
 /* just copy it for 4 times */
-void _copy_u(
+void _periodic_u(
     double U[NNX][NNY][NNZ][3]
 ) {
     for (int i = 0; i < NNX; i ++) {
@@ -135,7 +135,7 @@ void _copy_u(
 }
 
 /* just copy it for 4 times */
-void _copy_p(
+void _periodic_p(
     double P[NNX][NNY][NNZ]
 ) {
     for (int i = 0; i < NNX; i ++) {
@@ -162,18 +162,22 @@ void bc_p(
 ) {
 /*  
     timing: 
+    0 if for initialization
     2 is for after each iteration in the linear solver
     3 is reserved for periodic conditions
 */
 /*
     π is only subject to peridic conditions
     since all conditions in p lead to 0 value or 0 gradient of π
+    it doesn't need to be initialized either
+    because at the beginning, it is surely all 0
 */
     if (timing == 0) {
         _bc_p_init(P, BP);
-    }
-    if (timing == 3) {
-        _copy_p(P);
+    } else if (timing == 2) {
+        /* nothing to do */
+    } else if (timing == 3) {
+        _periodic_p(P);
     }
 }
 
@@ -190,20 +194,18 @@ void bc_u(
 ) {
 /*  
     timing: 
+    0 is for initialization
     1 is for just after u*@center is calculated
     2 is for after projection from uP@center to u@center
     3 is reserved for periodic conditions
 */
     if (timing == 0) {
         _bc_u_init(U, BU);
-    }
-    else if (timing == 1) {
+    } else if (timing == 1) {
         _outflow(U, UU, BU, X, KX, J);
-    }
-    else if (timing == 2) {
-        _slip(U, BU);
-    }
-    else if (timing == 3) {
-        _copy_u(U);
+    } else if (timing == 2) {
+        /* nothing to do */
+    } else if (timing == 3) {
+        _periodic_u(U);
     }
 }

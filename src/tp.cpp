@@ -7,7 +7,7 @@ void _cell(
     for (int i = I0; i <= I1; i ++) {
         for (int j = J0; j <= J1; j ++) {
             for (int k = K0; k <= K1; k ++) {
-                F[i][j][k] = set_bit(F[i][j][k], ACTIVE, 1);
+                F[i][j][k] = f_set(F[i][j][k], ACTIVE, 1, MASK1);
             }
         }
     }
@@ -16,7 +16,7 @@ void _cell(
     for (int i = I0sq; i <= I1sq; i ++) {
         for (int j = J0sq; j <= J1sq; j ++) {
             for (int k = K0sq; k <= K1sq; k ++) {
-                F[i][j][k] = set_bit(F[i][j][k], ACTIVE, 0);
+                F[i][j][k] = f_set(F[i][j][k], ACTIVE, 0, MASK1);
             }
         }
     }
@@ -28,32 +28,59 @@ void _face(
     //  inflow and outflow boundary
     for (int j = J0; j <= J1; j ++) {
         for (int k = K0; k <= K1; k ++) {
-            F[I0 - 1][j][k] = set_face(F[I0 - 1][j][k], F_E, INFLOW);
-            F[I1    ][j][k] = set_face(F[I1    ][j][k], F_E, OUTFLOW);
+            F[I0 - 1][j][k] = f_set(F[I0 - 1][j][k], F_E, INFLOW , MASK8);
+            F[I1    ][j][k] = f_set(F[I1    ][j][k], F_E, OUTFLOW, MASK8);
         }
     }
 
 //  slip boundary
     for (int i = I0; i <= I1; i ++) {
         for (int k = K0; k <= K1; k ++) {
-            F[i][J0 - 1][k] = set_face(F[i][J0 - 1][k], F_N, SLIP);
-            F[i][J1    ][k] = set_face(F[i][J1    ][k], F_N, SLIP);
+            F[i][J0 - 1][k] = f_set(F[i][J0 - 1][k], F_N, SLIP, MASK8);
+            F[i][J1    ][k] = f_set(F[i][J1    ][k], F_N, SLIP, MASK8);
         }
     }
 
 //  square east and west boundary
     for (int j = J0sq; j <= J1sq; j ++) {
         for (int k = K0sq; k <= K1sq; k ++) {
-            F[I0sq - 1][j][k] = set_face(F[I0sq - 1][j][k], F_E, WALL);
-            F[I1sq    ][j][k] = set_face(F[I1sq    ][j][k], F_E, WALL);
+            F[I0sq - 1][j][k] = f_set(F[I0sq - 1][j][k], F_E, WALL, MASK8);
+            F[I1sq    ][j][k] = f_set(F[I1sq    ][j][k], F_E, WALL, MASK8);
         }
     }
 
 //  square north and south boundary
     for (int i = I0sq; i <= I1sq; i ++) {
         for (int k = K0sq; k <= K1sq; k ++) {
-            F[i][J0sq - 1][k] = set_face(F[i][J0sq - 1][k], F_N, WALL);
-            F[i][J1sq    ][k] = set_face(F[i][J1sq    ][k], F_N, WALL);
+            F[i][J0sq - 1][k] = f_set(F[i][J0sq - 1][k], F_N, WALL, MASK8);
+            F[i][J1sq    ][k] = f_set(F[i][J1sq    ][k], F_N, WALL, MASK8);
+        }
+    }
+}
+
+void _normal(
+    unsigned int F[NNX][NNY][NNZ]
+) {
+    for (int i = I0 - 1; i <= I1; i ++) {
+        for (int j = J0 - 1; j <= J1; j ++) {
+            for (int k = K0 - 1; k <= K1; k ++) {
+                int ac0, ae1, an1, at1;
+                ac0 = f_see(F[i    ][j    ][k    ], ACTIVE, MASK1);
+                ae1 = f_see(F[i + 1][j    ][k    ], ACTIVE, MASK1);
+                an1 = f_see(F[i    ][j + 1][k    ], ACTIVE, MASK1);
+                at1 = f_see(F[i    ][j    ][k + 1], ACTIVE, MASK1);
+                if (!ac0) {
+                    if (ae1) {
+                        F[i][j][k] = f_set(F[i][j][k], M_E, 1, MASK1);
+                    }
+                    if (an1) {
+                        F[i][j][k] = f_set(F[i][j][k], M_N, 1, MASK1);
+                    }
+                    if (at1) {
+                        F[i][j][k] = f_set(F[i][j][k], M_T, 1, MASK1);
+                    }
+                }
+            }
         }
     }
 }
@@ -63,6 +90,7 @@ void tp_f(
 ) {
     _cell(F);
     _face(F);
+    _normal(F);
 }
 
 void tp_x(

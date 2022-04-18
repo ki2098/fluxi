@@ -1,39 +1,38 @@
 #ifndef FLAG_H
 #define FLAG_H
 
-/* cell and boundary indices flags */
+/* cell state flag : 1 bit */
 #define ACTIVE 0
+/* and boundary indices flags : 8 bits */
 #define F_E    1
 #define F_N    9
 #define F_T    17
-
-/* boundary type flags */
+/* boundary direction flags : 1 bit */
+#define M_E    25
+#define M_N    26
+#define M_T    27
+/* boundary type flags : 1 bit */
 #define D_U    1
 #define N_U    2
-#define D_P    3
-#define N_P    4
+#define D_V    3
+#define N_V    4
+#define D_W    5
+#define N_W    6
+#define D_P    7
+#define N_P    8
 
 /* flag operations */
-#define FACE   255u
+#define MASK8  255u
+#define MASK1  1u
 
-static unsigned int see_face(unsigned int f, int face) {
-    return (f >> face) & FACE;
+static unsigned int f_see(unsigned int flag, unsigned int position, unsigned int mask) {
+    return (flag >> position) & mask;
 }
 
-static unsigned int set_face(unsigned int f, int face, unsigned int value) {
-    f = f & ~(FACE << face);
-    f = f | (value << face);
-    return f;
-}
-
-static unsigned int set_bit(unsigned int f, int position, unsigned int value) {
-    f = f & ~(1u << position);
-    f = f | (value << position);
-    return f;
-}
-
-static unsigned int see_bit(unsigned int f, int position) {
-    return (f >> position) & 1u;
+static unsigned int f_set(unsigned int flag, unsigned int position, unsigned int value, unsigned int mask) {
+    flag = flag & ~(mask << position);
+    flag = flag | (value << position);
+    return flag;
 }
 
 #endif

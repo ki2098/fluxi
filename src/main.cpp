@@ -17,10 +17,11 @@ void _param_out(void) {
         fflush(stdout);
     }
     else {
-        fprintf(fo, "x,y,z,active,fe,fn,ft,k1x1,k2x2,k3x3,j,c1,c2,c3,c7,c8,c9,g11,g22,g33\n");
+        fprintf(fo, "x,y,z,active,fe,fn,ft,me,mn,mt,k1x1,k2x2,k3x3,j,c1,c2,c3,c7,c8,c9,g11,g22,g33\n");
         double x, y, z;
         int    flag, active;
         int    fe, fn, ft;
+        int    me, mn, mt;
         double k1x1, k2x2, k3x3;
         double det;
         double c1, c2, c3, c7, c8, c9;
@@ -45,11 +46,14 @@ void _param_out(void) {
                     g11    =  G[i][j][k][0 ];
                     g22    =  G[i][j][k][1 ];
                     g33    =  G[i][j][k][2 ];
-                    active = see_bit(flag, ACTIVE);
-                    fe     = see_face(flag, F_E);
-                    fn     = see_face(flag, F_N);
-                    ft     = see_face(flag, F_T);
-                    fprintf(fo, "%lf,%lf,%lf,%d,%d,%d,%d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", x, y, z, active, fe, fn, ft, k1x1, k2x2, k3x3, det, c1, c2, c3, c7, c8, c9, g11, g22, g33);
+                    active = f_see(flag, ACTIVE, MASK1);
+                    fe     = f_see(flag, F_E   , MASK8);
+                    fn     = f_see(flag, F_N   , MASK8);
+                    ft     = f_see(flag, F_T   , MASK8);
+                    me     = f_see(flag, M_E   , MASK1);
+                    mn     = f_see(flag, M_N   , MASK1);
+                    mt     = f_see(flag, M_T   , MASK1);
+                    fprintf(fo, "%lf,%lf,%lf,%d,%d,%d,%d,%d,%d,%d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", x, y, z, active, fe, fn, ft, me, mn, mt, k1x1, k2x2, k3x3, det, c1, c2, c3, c7, c8, c9, g11, g22, g33);
                 }
             }
         }
@@ -84,6 +88,22 @@ void _var_out(void) {
     }
 }
 
+void _boundary_out(void) {
+    printf("nu du nv dv nw dw np dp\n");
+    for (int i = 0; i <= NB; i ++) {
+        unsigned int b  = B[i];
+        unsigned int nu = f_see(b, N_U, MASK1);
+        unsigned int du = f_see(b, D_U, MASK1);
+        unsigned int nv = f_see(b, N_V, MASK1);
+        unsigned int dv = f_see(b, D_V, MASK1);
+        unsigned int nw = f_see(b, N_W, MASK1);
+        unsigned int dw = f_see(b, D_W, MASK1);
+        unsigned int np = f_see(b, N_P, MASK1);
+        unsigned int dp = f_see(b, D_P, MASK1);
+        printf("%u  %u  %u  %u  %u  %u  %u  %u\n", nu, du, nv, dv, nw, dw, np, dp);
+    }
+}
+
 void _init(void) {
     tp_x(X, KX, J, G, C);
     tp_f(F);
@@ -91,7 +111,7 @@ void _init(void) {
     for (int i = I0; i <= I1; i ++) {
         for (int j = J0; j <= J1; j ++) {
             for (int k = K0; k <= K1; k ++) {
-                if (see_bit(F[i][j][k], ACTIVE)) {
+                if (f_see(F[i][j][k], ACTIVE, MASK1)) {
                     U[i ][j][k][_U] = UINIT;
                     U[i ][j][k][_V] = VINIT;
                     U[i ][j][k][_W] = WINIT;
@@ -104,14 +124,13 @@ void _init(void) {
 
     bc_u(U, UU, BU, X, KX, J, C, 0);
     bc_p(P, BP, U, UU, X, KX, J, C, 0);
-    bc_p(PP, BPP, U, UU, X, KX, J, C, 0);
 }
 
 void _clr_pp(void) {
     for (int i = I0; i <= I1; i ++) {
         for (int j = J0; j <= J1; j ++) {
             for (int k = K0; k <= K1; k ++) {
-                if (see_bit(F[i][j][k], ACTIVE)) {
+                if (f_see(F[i][j][k], ACTIVE, MASK1)) {
                     PP[i][j][k] = 0;
                 }
             }
@@ -124,6 +143,7 @@ int main(void) {
 
     _param_out();
     _var_out();
+    _boundary_out();
 
     return 0;
 }

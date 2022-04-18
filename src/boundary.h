@@ -4,7 +4,7 @@
 #include "flag.h"
 
 /* number of boundaries */
-#define NB      5 
+#define NB      4 
 #define NOTHING 0
 #define WALL    1
 #define INFLOW  2
@@ -17,13 +17,13 @@
 #define WINFLOW 0.0
 
 /* boundary definitions */
-static const unsigned int B[NB] = {
-/*  u                    p               */
-    0                  | 0                 , // no boundary
-    set_bit(0, D_U, 1) | set_bit(0, N_P, 1), // wall
-    set_bit(0, D_U, 1) | set_bit(0, N_P, 1), // inflow
-    set_bit(0, D_U, 1) | set_bit(0, N_P, 1), // outflow
-    set_bit(0, D_U, 1) | set_bit(0, N_P, 1), // slip
+static const unsigned int B[NB + 1] = {
+/*  u                         v                         w                         p */
+    0                       | 0                       | 0                       | 0                 ,      // no boundary
+    f_set(0, D_U, 1, MASK1) | f_set(0, D_V, 1, MASK1) | f_set(0, D_W, 1, MASK1) | f_set(0, N_P, 1, MASK1), // wall
+    f_set(0, D_U, 1, MASK1) | f_set(0, D_V, 1, MASK1) | f_set(0, D_W, 1, MASK1) | f_set(0, N_P, 1, MASK1), // inflow
+    f_set(0, D_U, 1, MASK1) | f_set(0, D_V, 1, MASK1) | f_set(0, D_W, 1, MASK1) | f_set(0, N_P, 1, MASK1), // outflow
+    f_set(0, N_U, 1, MASK1) | f_set(0, D_V, 1, MASK1) | f_set(0, N_W, 1, MASK1) | f_set(0, N_P, 1, MASK1), // slip (normal in y)
 };
 
 

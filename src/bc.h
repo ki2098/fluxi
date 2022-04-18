@@ -3,12 +3,14 @@
 
 #include "setting.h"
 
+#define B_PP 0
+
 /* evaluate face value according to boundary condition */
-static double bc_evaluate(unsigned int Drch, unsigned int Neum, double reference, double distance, double value) {
-    if (Drch) {
+static double bc_evaluate(unsigned int drc, unsigned int neu, double reference, double distance, double value) {
+    if (drc) {
         return value;
     }
-    if (Neum) {
+    if (neu) {
         return reference + distance * value;
     }
     return 0;
