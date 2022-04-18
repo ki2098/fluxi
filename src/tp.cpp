@@ -7,7 +7,7 @@ void _cell(
     for (int i = I0; i <= I1; i ++) {
         for (int j = J0; j <= J1; j ++) {
             for (int k = K0; k <= K1; k ++) {
-                F[i][j][k] = set_bit(F[i][j][k], ACT, 1);
+                F[i][j][k] = set_bit(F[i][j][k], ACTIVE, 1);
             }
         }
     }
@@ -16,7 +16,7 @@ void _cell(
     for (int i = I0sq; i <= I1sq; i ++) {
         for (int j = J0sq; j <= J1sq; j ++) {
             for (int k = K0sq; k <= K1sq; k ++) {
-                F[i][j][k] = set_bit(F[i][j][k], ACT, 0);
+                F[i][j][k] = set_bit(F[i][j][k], ACTIVE, 0);
             }
         }
     }
@@ -58,14 +58,14 @@ void _face(
     }
 }
 
-void tp_f_init(
+void tp_f(
     unsigned int F[NNX][NNY][NNZ]
 ) {
     _cell(F);
     _face(F);
 }
 
-void tp_x_init(
+void tp_x(
     double  X[NNX][NNY][NNZ][3],
     double KX[NNX][NNY][NNZ][3],
     double  J[NNX][NNY][NNZ],

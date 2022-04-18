@@ -3,11 +3,11 @@
 
 #include "setting.h"
 
-void tp_f_init(
+void tp_f(
     unsigned int F[NNX][NNY][NNZ]
 );
 
-void tp_x_init(
+void tp_x(
     double  X[NNX][NNY][NNZ][3],
     double KX[NNX][NNY][NNZ][3],
     double  J[NNX][NNY][NNZ],

@@ -2,19 +2,19 @@
 #define FLAG_H
 
 /* cell and boundary indices flags */
-#define ACT   0
-#define F_E   1
-#define F_N   9
-#define F_T   17
+#define ACTIVE 0
+#define F_E    1
+#define F_N    9
+#define F_T    17
 
 /* boundary type flags */
-#define D_U   1
-#define N_U   2
-#define D_P   3
-#define N_P   4
+#define D_U    1
+#define N_U    2
+#define D_P    3
+#define N_P    4
 
 /* flag operations */
-#define FACE  255u
+#define FACE   255u
 
 static unsigned int see_face(unsigned int f, int face) {
     return (f >> face) & FACE;

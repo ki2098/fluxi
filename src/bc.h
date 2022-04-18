@@ -4,13 +4,15 @@
 #include "setting.h"
 
 /* evaluate face value according to boundary condition */
-double bc_evaluate(
-    unsigned int Drch, 
-    unsigned int Neum, 
-    double       reference, 
-    double       distance, 
-    double       value
-);
+static double bc_evaluate(unsigned int Drch, unsigned int Neum, double reference, double distance, double value) {
+    if (Drch) {
+        return value;
+    }
+    if (Neum) {
+        return reference + distance * value;
+    }
+    return 0;
+}
 
 /* pressure boundary value setting function */
 void bc_p(
@@ -35,12 +37,6 @@ void bc_u(
     double  J[NNX][NNY][NNZ],
     double  C[NNX][NNY][NNZ][6],
     int     timing
-);
-
-/* initialize boundary condition values*/
-void bc_init(
-    double BU[NNX][NNY][NNZ][3][3],
-    double BP[NNX][NNY][NNZ][3]
 );
 
 #endif

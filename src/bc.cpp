@@ -1,5 +1,63 @@
 #include "bc.h"
 
+/* what to be done at initialization */
+void _bc_u_init(
+    double  U[NNX][NNY][NNZ][3],
+    double BU[NNX][NNY][NNZ][3][3]
+) {
+    for (int j = J0; j <= J1; j ++) {
+        for (int k = K0; k <= K1; k ++) {
+            BU[I0 - 1][j][k][_E][_U] = UINFLOW;
+            BU[I0 - 1][j][k][_E][_V] = VINFLOW;
+            BU[I0 - 1][j][k][_E][_W] = WINFLOW;
+            BU[I1    ][j][k][_E][_U] = UINFLOW;
+            BU[I1    ][j][k][_E][_V] = VINFLOW;
+            BU[I1    ][j][k][_E][_W] = WINFLOW;
+        }
+    }
+    for (int i = I0; i <= I1; i ++) {
+        for (int k = K0; k <= K1; k ++) {
+            BU[i][J0 - 1][k][_N][_U] = UINIT;
+            BU[i][J0 - 1][k][_N][_V] = 0;
+            BU[i][J0 - 1][k][_N][_W] = 0;
+            BU[i][J1    ][k][_N][_U] = UINIT;
+            BU[i][J1    ][k][_N][_V] = 0;
+            BU[i][J1    ][k][_N][_W] = 0;
+        }
+    }
+    for (int i = 0; i < NNX; i ++) {
+        for (int j = 0; j < NNY; j ++) {
+            U[i][j][K0 - 1][_U] = U[i][j][K0][_U];
+            U[i][j][K0 - 1][_V] = U[i][j][K0][_V];
+            U[i][j][K0 - 1][_W] = U[i][j][K0][_W];
+            U[i][j][K0 - 2][_U] = U[i][j][K0][_U];
+            U[i][j][K0 - 2][_V] = U[i][j][K0][_V];
+            U[i][j][K0 - 2][_W] = U[i][j][K0][_W];
+            U[i][j][K1 + 1][_U] = U[i][j][K1][_U];
+            U[i][j][K1 + 1][_V] = U[i][j][K1][_V];
+            U[i][j][K1 + 1][_W] = U[i][j][K1][_W];
+            U[i][j][K1 + 2][_U] = U[i][j][K1][_U];
+            U[i][j][K1 + 2][_V] = U[i][j][K1][_V];
+            U[i][j][K1 + 2][_W] = U[i][j][K1][_W];
+        }
+    }
+}
+
+/* what to be done at initialization */
+void _bc_p_init(
+    double  P[NNX][NNY][NNZ],
+    double BP[NNX][NNY][NNZ][3]
+) {
+    for (int i = 0; i < NNX; i ++) {
+        for (int j = 0; j < NNY; j ++) {
+            P[i][j][K0 - 1] = P[i][j][K0];
+            P[i][j][K0 - 2] = P[i][j][K0];
+            P[i][j][K1 + 1] = P[i][j][K1];
+            P[i][j][K1 + 2] = P[i][j][K1];
+        }
+    }
+}
+
 /* slip velocity condition */
 void _slip(
     double  U[NNX][NNY][NNZ][3],
@@ -59,7 +117,7 @@ void _copy_u(
     double U[NNX][NNY][NNZ][3]
 ) {
     for (int i = 0; i < NNX; i ++) {
-        for (int j = 0; i < NNY; j ++) {
+        for (int j = 0; j < NNY; j ++) {
             U[i][j][K0 - 1][_U] = U[i][j][K0][_U];
             U[i][j][K0 - 1][_V] = U[i][j][K0][_V];
             U[i][j][K0 - 1][_W] = U[i][j][K0][_W];
@@ -81,30 +139,13 @@ void _copy_p(
     double P[NNX][NNY][NNZ]
 ) {
     for (int i = 0; i < NNX; i ++) {
-        for (int j = 0; i < NNY; j ++) {
+        for (int j = 0; j < NNY; j ++) {
             P[i][j][K0 - 1] = P[i][j][K0];
             P[i][j][K0 - 2] = P[i][j][K0];
             P[i][j][K1 + 1] = P[i][j][K1];
             P[i][j][K1 + 2] = P[i][j][K1];
         }
     }
-}
-
-/* evaluate face value according to boundary condition */
-double bc_evaluate(
-    unsigned int Drch, 
-    unsigned int Neum, 
-    double       reference, 
-    double       distance, 
-    double       value
-) {
-    if (Drch) {
-        return value;
-    }
-    if (Neum) {
-        return reference + distance * value;
-    }
-    return 0;
 }
 
 /* pressure boundary value setting function */
@@ -119,7 +160,19 @@ void bc_p(
     double  C[NNX][NNY][NNZ][6],
     int     timing
 ) {
-    if (timing == 2) {
+/*  
+    timing: 
+    2 is for after each iteration in the linear solver
+    3 is reserved for periodic conditions
+*/
+/*
+    π is only subject to peridic conditions
+    since all conditions in p lead to 0 value or 0 gradient of π
+*/
+    if (timing == 0) {
+        _bc_p_init(P, BP);
+    }
+    if (timing == 3) {
         _copy_p(P);
     }
 }
@@ -135,28 +188,22 @@ void bc_u(
     double  C[NNX][NNY][NNZ][6],
     int     timing
 ) {
-    if (timing == 1) {
+/*  
+    timing: 
+    1 is for just after u*@center is calculated
+    2 is for after projection from uP@center to u@center
+    3 is reserved for periodic conditions
+*/
+    if (timing == 0) {
+        _bc_u_init(U, BU);
+    }
+    else if (timing == 1) {
         _outflow(U, UU, BU, X, KX, J);
     }
     else if (timing == 2) {
         _slip(U, BU);
-        _copy_u(U);
     }
-}
-
-/* initialize boundary condition values*/
-void bc_init(
-    double BU[NNX][NNY][NNZ][3][3],
-    double BP[NNX][NNY][NNZ][3]
-) {
-    for (int j = J0; j <= J1; j ++) {
-        for (int k = K0; k <= K1; k ++) {
-            BU[I0 - 1][j][k][_E][_U] = UINFLOW;
-            BU[I0 - 1][j][k][_E][_V] = VINFLOW;
-            BU[I0 - 1][j][k][_E][_W] = WINFLOW;
-            BU[I1    ][j][k][_E][_U] = UINFLOW;
-            BU[I1    ][j][k][_E][_V] = VINFLOW;
-            BU[I1    ][j][k][_E][_W] = WINFLOW;
-        }
+    else if (timing == 3) {
+        _copy_u(U);
     }
 }
