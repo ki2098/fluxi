@@ -34,7 +34,6 @@ double         C[NNX][NNY][NNZ][6]    = {0};
 /* boundary condition values */
 double        BU[NNX][NNY][NNZ][3][3] = {0};
 double        BP[NNX][NNY][NNZ][3]    = {0};
-/* no need for BPP, because π is always 0 value or 0 gradient at boundary */
-// double       BPP[NNX][NNY][NNZ][3]    = {0};
+double       BPP[NNX][NNY][NNZ][3]    = {0};
 
 #endif

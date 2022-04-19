@@ -20,9 +20,16 @@
 #define N_W    6
 #define D_P    7
 #define N_P    8
+#define BT_U   1
+#define BT_V   3
+#define BT_W   5
+#define BT_P   7
+#define BT_D   0
+#define BT_N   1
 
 /* flag operations */
 #define MASK8  255u
+#define MASK2  3u
 #define MASK1  1u
 
 static unsigned int f_see(unsigned int flag, unsigned int position, unsigned int mask) {

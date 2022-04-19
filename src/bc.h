@@ -6,7 +6,9 @@
 #define B_PP 0
 
 /* evaluate face value according to boundary condition */
-static double bc_evaluate(unsigned int drc, unsigned int neu, double reference, double distance, double value) {
+static double bc_eva(unsigned int b, double reference, double distance, double value) {
+    unsigned int drc = f_see(b, BT_D, MASK1);
+    unsigned int neu = f_see(b, BT_N, MASK1);
     if (drc) {
         return value;
     }
