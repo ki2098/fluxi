@@ -1,6 +1,38 @@
 #!/usr/bin/bash
 
-g++ -c src/bc.cpp -o obj/bc.o
-g++ -c src/tp.cpp -o obj/tp.o
-g++ -c src/main.cpp -o obj/main.o
-g++ -o bin/fluo obj/bc.o obj/tp.o obj/main.o 
+rm ./obj/*
+rm ./bin/*
+
+date > build.txt
+
+echo compiling bc.cpp...
+echo bc.cpp___________________________________________________ >> build.txt
+nvc++ -c ./src/bc.cpp -acc -Minfo=accel -o ./obj/bc.o         &>> build.txt
+
+echo compiling contra.cpp...
+echo contra.cpp_______________________________________________ >> build.txt
+nvc++ -c ./src/contra.cpp -acc -Minfo=accel -o ./obj/contra.o &>> build.txt
+
+echo compiling diver.cpp...
+echo diver.cpp________________________________________________ >> build.txt
+nvc++ -c ./src/diver.cpp -acc -Minfo=accel -o ./obj/diver.o   &>> build.txt
+
+echo compiling ns.cpp...
+echo ns.cpp___________________________________________________ >> build.txt
+nvc++ -c ./src/ns.cpp -acc -Minfo=accel -o ./obj/ns.o         &>> build.txt
+
+echo compiling solver.cpp...
+echo solver.cpp_______________________________________________ >> build.txt
+nvc++ -c ./src/solver.cpp -acc -Minfo=accel -o ./obj/solver.o &>> build.txt
+
+echo compiling tp.cpp...
+echo tp.cpp___________________________________________________ >> build.txt
+nvc++ -c ./src/tp.cpp -acc -Minfo=accel -o ./obj/tp.o         &>> build.txt
+
+echo compiling main.cpp...
+echo main.cpp_________________________________________________ >> build.txt
+nvc++ -c ./src/main.cpp -acc -Minfo=accel -o ./obj/main.o     &>> build.txt
+
+echo compiling fluo...
+echo fluo_____________________________________________________ >> build.txt
+nvc++ ./obj/bc.o ./obj/contra.o ./obj/diver.o ./obj/ns.o ./obj/solver.o ./obj/tp.o ./obj/main.o -o ./bin/fluo -acc -Minfo=accel &>> build.txt
