@@ -15,10 +15,10 @@
 static const double X0   = 0.0;
 static const double Y0   = 0.0;
 static const double Z0   = 0.0;
-static const double X1   = 40.0;
+static const double X1   = 30.0;
 static const double Y1   = 20.0;
 static const double Z1   = 0.05;
-static const int    NX   = 800;
+static const int    NX   = 600;
 static const int    NY   = 400;
 static const int    NZ   = 1;
 static const int    NNX  = NX + 4;

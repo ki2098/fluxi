@@ -2,30 +2,30 @@
 #define FLAG_H
 
 /* cell state flag : 1 bit */
-#define ACTIVE 0
+#define _ACTIVE 0
 /* and boundary indices flags : 8 bits */
-#define F_E    1
-#define F_N    9
-#define F_T    17
+#define _F_E    1
+#define _F_N    9
+#define _F_T    17
 /* boundary direction flags : 1 bit */
-#define M_E    25
-#define M_N    26
-#define M_T    27
+#define _M_E    25
+#define _M_N    26
+#define _M_T    27
 /* boundary type flags : 1 bit */
-#define D_U    1
-#define N_U    2
-#define D_V    3
-#define N_V    4
-#define D_W    5
-#define N_W    6
-#define D_P    7
-#define N_P    8
-#define BT_U   1
-#define BT_V   3
-#define BT_W   5
-#define BT_P   7
-#define BT_D   0
-#define BT_N   1
+#define _D_U    0
+#define _N_U    1
+#define _D_V    2
+#define _N_V    3
+#define _D_W    4
+#define _N_W    5
+#define _D_P    6
+#define _N_P    7
+#define _BT_U   0
+#define _BT_V   2
+#define _BT_W   4
+#define _BT_P   6
+#define _BT_D   0
+#define _BT_N   1
 
 /* flag operations */
 #define MASK8  255u

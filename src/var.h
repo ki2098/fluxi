@@ -11,6 +11,7 @@ double         U[NNX][NNY][NNZ][3]    = {0};
 double        UA[NNX][NNY][NNZ][3]    = {0};
 double        UP[NNX][NNY][NNZ][3]    = {0};
 double        UD[NNX][NNY][NNZ][3]    = {0};
+double        UC[NNX][NNY][NNZ][3]    = {0};
 double        UU[NNX][NNY][NNZ][3]    = {0};
 double       UUA[NNX][NNY][NNZ][3]    = {0};
 double       UUP[NNX][NNY][NNZ][3]    = {0};

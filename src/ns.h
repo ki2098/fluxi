@@ -1,5 +1,5 @@
-#ifndef NS_H
-#define NS_H
+#ifndef SMAC_H
+#define SMAC_H
 
 #include "setting.h"
 
@@ -12,20 +12,16 @@ void ns_pseudo_c(
     double       SGS[NNX][NNY][NNZ],
     double        KX[NNX][NNY][NNZ][3],
     double         J[NNX][NNY][NNZ],
-    double         C[NNX][NNY][NNZ][6],
-    double         ALPHA,
-    double         DT,
-    double         RI
+    double         C[NNX][NNY][NNZ][6]
 );
 
 void ns_correction_c(
     unsigned int   F[NNX][NNY][NNZ],
     double         U[NNX][NNY][NNZ][3],
     double        UD[NNX][NNY][NNZ][3],
-    double        BU[NNX][NNY][NNZ][3][3],
-    double        PP[NNX][NNY][NNZ],
-    double        KX[NNX][NNY][NNZ][3],
-    double         DT
+    double         P[NNX][NNY][NNZ],
+    double        BP[NNX][NNY][NNZ][3],
+    double        KX[NNX][NNY][NNZ][3]
 );
 
 void ns_correction_f(
@@ -34,10 +30,16 @@ void ns_correction_f(
     double        UU[NNX][NNY][NNZ][3],
     double       UUD[NNX][NNY][NNZ][3],
     double        BU[NNX][NNY][NNZ][3][3],
-    double        PP[NNX][NNY][NNZ],
+    double         P[NNX][NNY][NNZ],
+    double        BP[NNX][NNY][NNZ][3],
+    double         X[NNX][NNY][NNZ][3],
     double        KX[NNX][NNY][NNZ][3],
-    double         G[NNX][NNY][NNZ],
-    double         DT
+    double         G[NNX][NNY][NNZ][3]
+);
+
+void ns_correction_p(
+    double  P[NNX][NNY][NNZ],
+    double PP[NNX][NNY][NNZ]
 );
 
 #endif

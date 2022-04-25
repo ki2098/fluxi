@@ -18,12 +18,12 @@
 
 /* boundary definitions */
 static const unsigned int B[NB + 1] = {
-/*  u                         v                         w                         p */
-    0                       | 0                       | 0                       | 0                 ,      // no boundary
-    f_set(0, D_U, 1, MASK1) | f_set(0, D_V, 1, MASK1) | f_set(0, D_W, 1, MASK1) | f_set(0, N_P, 1, MASK1), // wall
-    f_set(0, D_U, 1, MASK1) | f_set(0, D_V, 1, MASK1) | f_set(0, D_W, 1, MASK1) | f_set(0, N_P, 1, MASK1), // inflow
-    f_set(0, D_U, 1, MASK1) | f_set(0, D_V, 1, MASK1) | f_set(0, D_W, 1, MASK1) | f_set(0, N_P, 1, MASK1), // outflow
-    f_set(0, N_U, 1, MASK1) | f_set(0, D_V, 1, MASK1) | f_set(0, N_W, 1, MASK1) | f_set(0, N_P, 1, MASK1), // slip (normal in y)
+/*  u                          v                          w                          p */
+    0                        | 0                        | 0                        | 0                       , // no boundary
+    f_set(0, _D_U, 1, MASK1) | f_set(0, _D_V, 1, MASK1) | f_set(0, _D_W, 1, MASK1) | f_set(0, _N_P, 1, MASK1), // wall
+    f_set(0, _D_U, 1, MASK1) | f_set(0, _D_V, 1, MASK1) | f_set(0, _D_W, 1, MASK1) | f_set(0, _N_P, 1, MASK1), // inflow
+    f_set(0, _D_U, 1, MASK1) | f_set(0, _D_V, 1, MASK1) | f_set(0, _D_W, 1, MASK1) | f_set(0, _N_P, 1, MASK1), // outflow
+    f_set(0, _N_U, 1, MASK1) | f_set(0, _D_V, 1, MASK1) | f_set(0, _N_W, 1, MASK1) | f_set(0, _N_P, 1, MASK1)  // slip (normal in y)
 };
 
 

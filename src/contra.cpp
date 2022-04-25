@@ -12,6 +12,7 @@ void contra(
     double       KX[NNX][NNY][NNZ][3],
     double        J[NNX][NNY][NNZ]
 ) {
+    #pragma acc kernels loop independent collapse(3) present(U, KX, UC, J)
     for (int i = I0 - 1; i <= I1 + 1; i ++) {
         for (int j = J0 - 1; j <= J1 + 1; j ++) {
             for (int k = K0 - 1; k <= K1 + 1; k ++) {
@@ -33,6 +34,7 @@ void contra(
         }
     }
 
+    #pragma acc kernels loop independent collapse(3) present(F, U, UC, UU, BU, X, KX) copyin(B)
     for (int i = I0 - 1; i <= I1; i ++) {
         for (int j = J0 - 1; j <= J1; j ++) {
             for (int k = K0 - 1; k <= K1; k ++) {
@@ -42,13 +44,12 @@ void contra(
                 double x1, x2, x3;
                 double k1, k2, k3;
                 double de;
-                double rf, di, bc;
-                unsigned int bb;
+                double rf, di;
                 ff = F[i][j][k];
 
-                m3 = f_see(ff, M_E, MASK1);
-                f3 = f_see(ff, F_E, MASK8);
-                b3 = f_see(B[f3], BT_U, MASK2);
+                m3 = f_see(ff, _M_E, MASK1);
+                f3 = f_see(ff, _F_E, MASK8);
+                b3 = f_see(B[f3], _BT_U, MASK2);
                 if (f3) {
                     rf = U[i + m3][j][k][_U];
                     di = 0.5 - m3;
@@ -68,9 +69,9 @@ void contra(
                 }
                 UU[i][j][k][_U] = uf;
 
-                m3 = f_see(ff, M_N, MASK1);
-                f3 = f_see(ff, F_N, MASK8);
-                b3 = f_see(B[f3], BT_V, MASK2);
+                m3 = f_see(ff, _M_N, MASK1);
+                f3 = f_see(ff, _F_N, MASK8);
+                b3 = f_see(B[f3], _BT_V, MASK2);
                 if (f3) {
                     rf = U[i][j + m3][k][_V];
                     di = 0.5 - m3;
@@ -90,9 +91,9 @@ void contra(
                 }
                 UU[i][j][k][_V] = uf;
 
-                m3 = f_see(ff, M_T, MASK1);
-                f3 = f_see(ff, F_T, MASK8);
-                b3 = f_see(B[f3], BT_W, MASK2);
+                m3 = f_see(ff, _M_T, MASK1);
+                f3 = f_see(ff, _F_T, MASK8);
+                b3 = f_see(B[f3], _BT_W, MASK2);
                 if (f3) {
                     rf = U[i][j][k + m3][_W];
                     di = 0.5 - m3;
