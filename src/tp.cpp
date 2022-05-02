@@ -33,15 +33,23 @@ void _face(
         }
     }
 
-    //  slip boundary
+    //  domain north and south boundary
     for (int i = I0; i <= I1; i ++) {
         for (int k = K0; k <= K1; k ++) {
-            F[i][J0 - 1][k] = f_set(F[i][J0 - 1][k], _F_N, SLIP, MASK8);
-            F[i][J1    ][k] = f_set(F[i][J1    ][k], _F_N, SLIP, MASK8);
+            F[i][J0 - 1][k] = f_set(F[i][J0 - 1][k], _F_N, SLIP_Y, MASK8);
+            F[i][J1    ][k] = f_set(F[i][J1    ][k], _F_N, SLIP_Y, MASK8);
         }
     }
 
-    //  square east and west boundary
+    //  domain top and bottom boundary
+    for (int i = I0; i <= I1; i ++) {
+        for (int j = J0; j <= J1; j ++) {
+            F[i][j][K0 - 1] = f_set(F[i][j][K0 - 1], _F_T, WALL  , MASK8);
+            F[i][j][K1    ] = f_set(F[i][j][K1    ], _F_T, SLIP_Z, MASK8);
+        }
+    }
+
+    //  cube east and west boundary
     for (int j = J0sq; j <= J1sq; j ++) {
         for (int k = K0sq; k <= K1sq; k ++) {
             F[I0sq - 1][j][k] = f_set(F[I0sq - 1][j][k], _F_E, WALL, MASK8);
@@ -49,11 +57,18 @@ void _face(
         }
     }
 
-    //  square north and south boundary
+    //  cube north and south boundary
     for (int i = I0sq; i <= I1sq; i ++) {
         for (int k = K0sq; k <= K1sq; k ++) {
             F[i][J0sq - 1][k] = f_set(F[i][J0sq - 1][k], _F_N, WALL, MASK8);
             F[i][J1sq    ][k] = f_set(F[i][J1sq    ][k], _F_N, WALL, MASK8);
+        }
+    }
+
+    //  cube top boundary
+    for (int i = I0sq; i <= I1sq; i ++) {
+        for (int j = J0sq; j <= J1sq; j ++) {
+            F[i][j][K1sq] = f_set(F[i][j][K1sq], _F_T, WALL, MASK8);
         }
     }
 }

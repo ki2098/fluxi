@@ -82,12 +82,12 @@ void solver_sor(
                     f23 = f_see(f23, _F_N, MASK8);
                     f32 = f_see(f32, _F_T, MASK8);
                     f33 = f_see(f33, _F_T, MASK8);
-                    b12 = f_see(B[f12], _BT_P, MASK2);
-                    b13 = f_see(B[f13], _BT_P, MASK2);
-                    b22 = f_see(B[f22], _BT_P, MASK2);
-                    b23 = f_see(B[f23], _BT_P, MASK2);
-                    b32 = f_see(B[f32], _BT_P, MASK2);
-                    b33 = f_see(B[f33], _BT_P, MASK2);
+                    b12 = f_see(B[f12], _B_P, MASK2);
+                    b13 = f_see(B[f13], _B_P, MASK2);
+                    b22 = f_see(B[f22], _B_P, MASK2);
+                    b23 = f_see(B[f23], _B_P, MASK2);
+                    b32 = f_see(B[f32], _B_P, MASK2);
+                    b33 = f_see(B[f33], _B_P, MASK2);
                     if (f13) {
                         _pre_bc_eva(m13, pc0, pe1, ref, dis);
                         pe1 = 2 * bc_eva(b13, ref, dis, BP[i][j][k][_E]) - pc0;
@@ -187,12 +187,12 @@ void solver_sor(
                     f23 = f_see(f23, _F_N, MASK8);
                     f32 = f_see(f32, _F_T, MASK8);
                     f33 = f_see(f33, _F_T, MASK8);
-                    b12 = f_see(B[f12], _BT_P, MASK2);
-                    b13 = f_see(B[f13], _BT_P, MASK2);
-                    b22 = f_see(B[f22], _BT_P, MASK2);
-                    b23 = f_see(B[f23], _BT_P, MASK2);
-                    b32 = f_see(B[f32], _BT_P, MASK2);
-                    b33 = f_see(B[f33], _BT_P, MASK2);
+                    b12 = f_see(B[f12], _B_P, MASK2);
+                    b13 = f_see(B[f13], _B_P, MASK2);
+                    b22 = f_see(B[f22], _B_P, MASK2);
+                    b23 = f_see(B[f23], _B_P, MASK2);
+                    b32 = f_see(B[f32], _B_P, MASK2);
+                    b33 = f_see(B[f33], _B_P, MASK2);
                     if (f13) {
                         _pre_bc_eva(m13, pc0, pe1, ref, dis);
                         pe1 = 2 * bc_eva(b13, ref, dis, BP[i][j][k][_E]) - pc0;
@@ -316,12 +316,12 @@ void solver_jacobi(
                     f23 = f_see(f23, _F_N, MASK8);
                     f32 = f_see(f32, _F_T, MASK8);
                     f33 = f_see(f33, _F_T, MASK8);
-                    b12 = f_see(B[f12], _BT_P, MASK2);
-                    b13 = f_see(B[f13], _BT_P, MASK2);
-                    b22 = f_see(B[f22], _BT_P, MASK2);
-                    b23 = f_see(B[f23], _BT_P, MASK2);
-                    b32 = f_see(B[f32], _BT_P, MASK2);
-                    b33 = f_see(B[f33], _BT_P, MASK2);
+                    b12 = f_see(B[f12], _B_P, MASK2);
+                    b13 = f_see(B[f13], _B_P, MASK2);
+                    b22 = f_see(B[f22], _B_P, MASK2);
+                    b23 = f_see(B[f23], _B_P, MASK2);
+                    b32 = f_see(B[f32], _B_P, MASK2);
+                    b33 = f_see(B[f33], _B_P, MASK2);
                     if (f13) {
                         _pre_bc_eva(m13, pc0, pe1, ref, dis);
                         pe1 = 2 * bc_eva(b13, ref, dis, BP[i][j][k][_E]) - pc0;

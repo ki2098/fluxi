@@ -7,8 +7,8 @@
 
 /* evaluate face value according to boundary condition */
 static double bc_eva(unsigned int b, double reference, double distance, double value) {
-    unsigned int drc = f_see(b, _BT_D, MASK1);
-    unsigned int neu = f_see(b, _BT_N, MASK1);
+    unsigned int drc = f_see(b, _B_D, MASK1);
+    unsigned int neu = f_see(b, _B_N, MASK1);
     if (drc) {
         return value;
     }
@@ -30,12 +30,6 @@ void bc_p_init(
     double BP[NNX][NNY][NNZ][3]
 );
 
-/* slip velocity condition */
-void bc_u_slip(
-    double  U[NNX][NNY][NNZ][3],
-    double BU[NNX][NNY][NNZ][3][3]
-);
-
 /* outflow velocity condition */
 void bc_u_outflow(
     double  U[NNX][NNY][NNZ][3],
@@ -43,16 +37,6 @@ void bc_u_outflow(
     double BU[NNX][NNY][NNZ][3][3],
     double  X[NNX][NNY][NNZ][3],
     double KX[NNX][NNY][NNZ][3]
-);
-
-/* just copy it for 4 times */
-void bc_u_periodic(
-    double U[NNX][NNY][NNZ][3]
-);
-
-/* just copy it for 4 times */
-void bc_p_periodic(
-    double P[NNX][NNY][NNZ]
 );
 
 #endif

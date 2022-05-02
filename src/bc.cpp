@@ -15,22 +15,6 @@ void bc_u_init(
             BU[I1    ][j][k][_E][_W] = WINFLOW;
         }
     }
-    for (int i = 0; i < NNX; i ++) {
-        for (int j = 0; j < NNY; j ++) {
-            U[i][j][K0 - 1][_U] = U[i][j][K0][_U];
-            U[i][j][K0 - 1][_V] = U[i][j][K0][_V];
-            U[i][j][K0 - 1][_W] = U[i][j][K0][_W];
-            U[i][j][K0 - 2][_U] = U[i][j][K0][_U];
-            U[i][j][K0 - 2][_V] = U[i][j][K0][_V];
-            U[i][j][K0 - 2][_W] = U[i][j][K0][_W];
-            U[i][j][K1 + 1][_U] = U[i][j][K1][_U];
-            U[i][j][K1 + 1][_V] = U[i][j][K1][_V];
-            U[i][j][K1 + 1][_W] = U[i][j][K1][_W];
-            U[i][j][K1 + 2][_U] = U[i][j][K1][_U];
-            U[i][j][K1 + 2][_V] = U[i][j][K1][_V];
-            U[i][j][K1 + 2][_W] = U[i][j][K1][_W];
-        }
-    }
 }
 
 /* what to be done at initialization */
@@ -38,12 +22,7 @@ void bc_p_init(
     double  P[NNX][NNY][NNZ],
     double BP[NNX][NNY][NNZ][3]
 ) {
-    for (int i = 0; i < NNX; i ++) {
-        for (int j = 0; j < NNY; j ++) {
-            P[i][j][K0 - 1] = P[i][j][K0];
-            P[i][j][K1 + 1] = P[i][j][K1];
-        }
-    }
+    // nothing to do
 }
 
 /* outflow velocity condition */
@@ -90,42 +69,6 @@ void bc_u_outflow(
             BU[I1][j][k][_E][_U] = ufe;
             BU[I1][j][k][_E][_V] = vfe;
             BU[I1][j][k][_E][_W] = wfe;
-        }
-    }
-}
-
-/* just copy it for 4 times */
-void bc_u_periodic(
-    double U[NNX][NNY][NNZ][3]
-) {
-    #pragma acc kernels loop independent collapse(2) present(U)
-    for (int i = 0; i < NNX; i ++) {
-        for (int j = 0; j < NNY; j ++) {
-            U[i][j][K0 - 1][_U] = U[i][j][K0][_U];
-            U[i][j][K0 - 1][_V] = U[i][j][K0][_V];
-            U[i][j][K0 - 1][_W] = U[i][j][K0][_W];
-            U[i][j][K0 - 2][_U] = U[i][j][K0][_U];
-            U[i][j][K0 - 2][_V] = U[i][j][K0][_V];
-            U[i][j][K0 - 2][_W] = U[i][j][K0][_W];
-            U[i][j][K1 + 1][_U] = U[i][j][K1][_U];
-            U[i][j][K1 + 1][_V] = U[i][j][K1][_V];
-            U[i][j][K1 + 1][_W] = U[i][j][K1][_W];
-            U[i][j][K1 + 2][_U] = U[i][j][K1][_U];
-            U[i][j][K1 + 2][_V] = U[i][j][K1][_V];
-            U[i][j][K1 + 2][_W] = U[i][j][K1][_W];
-        }
-    }
-}
-
-/* just copy it for 4 times */
-void bc_p_periodic(
-    double P[NNX][NNY][NNZ]
-) {
-    #pragma acc kernels loop independent collapse(2) present(P)
-    for (int i = 0; i < NNX; i ++) {
-        for (int j = 0; j < NNY; j ++) {
-            P[i][j][K0 - 1] = P[i][j][K0];
-            P[i][j][K1 + 1] = P[i][j][K1];
         }
     }
 }

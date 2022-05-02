@@ -20,12 +20,12 @@
 #define _N_W    5
 #define _D_P    6
 #define _N_P    7
-#define _BT_U   0
-#define _BT_V   2
-#define _BT_W   4
-#define _BT_P   6
-#define _BT_D   0
-#define _BT_N   1
+#define _B_U    0
+#define _B_V    2
+#define _B_W    4
+#define _B_P    6
+#define _B_D    0
+#define _B_N    1
 
 /* flag operations */
 #define MASK8  255u

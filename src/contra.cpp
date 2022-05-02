@@ -49,7 +49,7 @@ void contra(
 
                 m3 = f_see(ff, _M_E, MASK1);
                 f3 = f_see(ff, _F_E, MASK8);
-                b3 = f_see(B[f3], _BT_U, MASK2);
+                b3 = f_see(B[f3], _B_U, MASK2);
                 if (f3) {
                     rf = U[i + m3][j][k][_U];
                     di = 0.5 - m3;
@@ -71,7 +71,7 @@ void contra(
 
                 m3 = f_see(ff, _M_N, MASK1);
                 f3 = f_see(ff, _F_N, MASK8);
-                b3 = f_see(B[f3], _BT_V, MASK2);
+                b3 = f_see(B[f3], _B_V, MASK2);
                 if (f3) {
                     rf = U[i][j + m3][k][_V];
                     di = 0.5 - m3;
@@ -93,7 +93,7 @@ void contra(
 
                 m3 = f_see(ff, _M_T, MASK1);
                 f3 = f_see(ff, _F_T, MASK8);
-                b3 = f_see(B[f3], _BT_W, MASK2);
+                b3 = f_see(B[f3], _B_W, MASK2);
                 if (f3) {
                     rf = U[i][j][k + m3][_W];
                     di = 0.5 - m3;

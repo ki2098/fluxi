@@ -276,18 +276,18 @@ void ns_pseudo_c(
                     us2 = U[i    ][j - 2][k    ][_U];
                     ub1 = U[i    ][j    ][k - 1][_U];
                     ub2 = U[i    ][j    ][k - 2][_U];
-                    b11 = f_see(B[f11], _BT_U, MASK2);
-                    b12 = f_see(B[f12], _BT_U, MASK2);
-                    b13 = f_see(B[f13], _BT_U, MASK2);
-                    b14 = f_see(B[f14], _BT_U, MASK2);
-                    b21 = f_see(B[f21], _BT_U, MASK2);
-                    b22 = f_see(B[f22], _BT_U, MASK2);
-                    b23 = f_see(B[f23], _BT_U, MASK2);
-                    b24 = f_see(B[f24], _BT_U, MASK2);
-                    b31 = f_see(B[f31], _BT_U, MASK2);
-                    b32 = f_see(B[f32], _BT_U, MASK2);
-                    b33 = f_see(B[f33], _BT_U, MASK2);
-                    b34 = f_see(B[f34], _BT_U, MASK2);
+                    b11 = f_see(B[f11], _B_U, MASK2);
+                    b12 = f_see(B[f12], _B_U, MASK2);
+                    b13 = f_see(B[f13], _B_U, MASK2);
+                    b14 = f_see(B[f14], _B_U, MASK2);
+                    b21 = f_see(B[f21], _B_U, MASK2);
+                    b22 = f_see(B[f22], _B_U, MASK2);
+                    b23 = f_see(B[f23], _B_U, MASK2);
+                    b24 = f_see(B[f24], _B_U, MASK2);
+                    b31 = f_see(B[f31], _B_U, MASK2);
+                    b32 = f_see(B[f32], _B_U, MASK2);
+                    b33 = f_see(B[f33], _B_U, MASK2);
+                    b34 = f_see(B[f34], _B_U, MASK2);
                     if (f13) {
                         _pre_bc_eva(m13, uc0, ue1, ref, dis);
                         ue1 = 2 * bc_eva(b13, ref, dis, BU[i][j][k][_E][_U]) - uc0;
@@ -355,18 +355,18 @@ void ns_pseudo_c(
                     us2 =   U[i    ][j - 2][k    ][_V];
                     ub1 =   U[i    ][j    ][k - 1][_V];
                     ub2 =   U[i    ][j    ][k - 2][_V];
-                    b11 = f_see(B[f11], _BT_V, MASK2);
-                    b12 = f_see(B[f12], _BT_V, MASK2);
-                    b13 = f_see(B[f13], _BT_V, MASK2);
-                    b14 = f_see(B[f14], _BT_V, MASK2);
-                    b21 = f_see(B[f21], _BT_V, MASK2);
-                    b22 = f_see(B[f22], _BT_V, MASK2);
-                    b23 = f_see(B[f23], _BT_V, MASK2);
-                    b24 = f_see(B[f24], _BT_V, MASK2);
-                    b31 = f_see(B[f31], _BT_V, MASK2);
-                    b32 = f_see(B[f32], _BT_V, MASK2);
-                    b33 = f_see(B[f33], _BT_V, MASK2);
-                    b34 = f_see(B[f34], _BT_V, MASK2);
+                    b11 = f_see(B[f11], _B_V, MASK2);
+                    b12 = f_see(B[f12], _B_V, MASK2);
+                    b13 = f_see(B[f13], _B_V, MASK2);
+                    b14 = f_see(B[f14], _B_V, MASK2);
+                    b21 = f_see(B[f21], _B_V, MASK2);
+                    b22 = f_see(B[f22], _B_V, MASK2);
+                    b23 = f_see(B[f23], _B_V, MASK2);
+                    b24 = f_see(B[f24], _B_V, MASK2);
+                    b31 = f_see(B[f31], _B_V, MASK2);
+                    b32 = f_see(B[f32], _B_V, MASK2);
+                    b33 = f_see(B[f33], _B_V, MASK2);
+                    b34 = f_see(B[f34], _B_V, MASK2);
                     if (f13) {
                         _pre_bc_eva(m13, uc0, ue1, ref, dis);
                         ue1 = 2 * bc_eva(b13, ref, dis, BU[i][j][k][_E][_V]) - uc0;
@@ -434,18 +434,18 @@ void ns_pseudo_c(
                     us2 =   U[i    ][j - 2][k    ][_W];
                     ub1 =   U[i    ][j    ][k - 1][_W];
                     ub2 =   U[i    ][j    ][k - 2][_W];
-                    b11 = f_see(B[f11], _BT_W, MASK2);
-                    b12 = f_see(B[f12], _BT_W, MASK2);
-                    b13 = f_see(B[f13], _BT_W, MASK2);
-                    b14 = f_see(B[f14], _BT_W, MASK2);
-                    b21 = f_see(B[f21], _BT_W, MASK2);
-                    b22 = f_see(B[f22], _BT_W, MASK2);
-                    b23 = f_see(B[f23], _BT_W, MASK2);
-                    b24 = f_see(B[f24], _BT_W, MASK2);
-                    b31 = f_see(B[f31], _BT_W, MASK2);
-                    b32 = f_see(B[f32], _BT_W, MASK2);
-                    b33 = f_see(B[f33], _BT_W, MASK2);
-                    b34 = f_see(B[f34], _BT_W, MASK2);
+                    b11 = f_see(B[f11], _B_W, MASK2);
+                    b12 = f_see(B[f12], _B_W, MASK2);
+                    b13 = f_see(B[f13], _B_W, MASK2);
+                    b14 = f_see(B[f14], _B_W, MASK2);
+                    b21 = f_see(B[f21], _B_W, MASK2);
+                    b22 = f_see(B[f22], _B_W, MASK2);
+                    b23 = f_see(B[f23], _B_W, MASK2);
+                    b24 = f_see(B[f24], _B_W, MASK2);
+                    b31 = f_see(B[f31], _B_W, MASK2);
+                    b32 = f_see(B[f32], _B_W, MASK2);
+                    b33 = f_see(B[f33], _B_W, MASK2);
+                    b34 = f_see(B[f34], _B_W, MASK2);
                     if (f13) {
                         _pre_bc_eva(m13, uc0, ue1, ref, dis);
                         ue1 = 2 * bc_eva(b13, ref, dis, BU[i][j][k][_E][_W]) - uc0;
@@ -573,12 +573,12 @@ void ns_correction_c(
                     f23 = f_see(f23, _F_N, MASK8);
                     f32 = f_see(f32, _F_T, MASK8);
                     f33 = f_see(f33, _F_T, MASK8);
-                    b12 = f_see(B[f12], _BT_P, MASK2);
-                    b13 = f_see(B[f13], _BT_P, MASK2);
-                    b22 = f_see(B[f22], _BT_P, MASK2);
-                    b23 = f_see(B[f23], _BT_P, MASK2);
-                    b32 = f_see(B[f32], _BT_P, MASK2);
-                    b33 = f_see(B[f33], _BT_P, MASK2);
+                    b12 = f_see(B[f12], _B_P, MASK2);
+                    b13 = f_see(B[f13], _B_P, MASK2);
+                    b22 = f_see(B[f22], _B_P, MASK2);
+                    b23 = f_see(B[f23], _B_P, MASK2);
+                    b32 = f_see(B[f32], _B_P, MASK2);
+                    b33 = f_see(B[f33], _B_P, MASK2);
                     if (f13) {
                         _pre_bc_eva(m13, pc0, pe1, ref, dis);
                         pe1 = 2 * bc_eva(b13, ref, dis, BP[i][j][k][_E]) - pc0;
@@ -646,7 +646,7 @@ void ns_correction_f(
 
                 m3 = f_see(ff, _M_E, MASK1);
                 f3 = f_see(ff, _F_E, MASK8);
-                b3 = f_see(B[f3], _BT_U, MASK2);
+                b3 = f_see(B[f3], _B_U, MASK2);
                 if (f3) {
                     rf = U[i + m3][j][k][_U];
                     di = 0.5 - m3;
@@ -671,7 +671,7 @@ void ns_correction_f(
 
                 m3 = f_see(ff, _M_N, MASK1);
                 f3 = f_see(ff, _F_N, MASK8);
-                b3 = f_see(B[f3], _BT_V, MASK2);
+                b3 = f_see(B[f3], _B_V, MASK2);
                 if (f3) {
                     rf = U[i][j + m3][k][_V];
                     di = 0.5 - m3;
@@ -696,7 +696,7 @@ void ns_correction_f(
 
                 m3 = f_see(ff, _M_T, MASK1);
                 f3 = f_see(ff, _F_T, MASK8);
-                b3 = f_see(B[f3], _BT_W, MASK2);
+                b3 = f_see(B[f3], _B_W, MASK2);
                 if (f3) {
                     rf = U[i][j][k + m3][_W];
                     di = 0.5 - m3;

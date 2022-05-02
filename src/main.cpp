@@ -6,6 +6,7 @@
 #include "contra.h"
 #include "solver.h"
 #include "diver.h"
+#include "turb.h"
 
 static void _param_out(void) {
     FILE *fo;
@@ -60,10 +61,10 @@ static void _param_out(void) {
 }
 
 static void _var_out(char* fname) {
-    #pragma acc data present(X, U, UA, UP, UU, UUP, UUA, P, PP, DVR, DVP, DVA) 
+    #pragma acc data present(X, U, UA, UP, UU, UUP, UUA, P, PP, SGS, DVR, DVP, DVA) 
     {
     // acc data starts
-    #pragma acc update host(X, U, UA, UP, UU, UUP, UUA, P, PP, DVR, DVP, DVA)
+    #pragma acc update host(X, U, UA, UP, UU, UUP, UUA, P, PP, SGS, DVR, DVP, DVA)
     
     FILE *fo;
     fo = fopen(fname, "w+t");
@@ -72,8 +73,8 @@ static void _var_out(char* fname) {
         fflush(stdout);
     }
     else {
-        fprintf(fo, "x,y,z,u,v,w,ju,jv,jw,p,dvr,dva\n");
-        double x, y, z, u, v, w, ju, jv, jw, p, dvr, dva;
+        fprintf(fo, "x,y,z,u,v,w,ju,jv,jw,p,nue,dvr,dva\n");
+        double x, y, z, u, v, w, ju, jv, jw, p, nue, dvr, dva;
         for (int k = K0; k <= K1; k ++) {
             for (int j = J0; j <= J1; j ++) {
                 for (int i = I0; i <= I1; i ++) {
@@ -87,9 +88,10 @@ static void _var_out(char* fname) {
                     jv  =  UU[i][j][k][_V];
                     jw  =  UU[i][j][k][_W];
                     p   =   P[i][j][k];
+                    nue = SGS[i][j][k];
                     dvr = DVR[i][j][k];
                     dva = DVA[i][j][k];
-                    fprintf(fo, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", x, y, z, u, v, w, ju, jv, jw, p, dvr, dva);
+                    fprintf(fo, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", x, y, z, u, v, w, ju, jv, jw, p, nue, dvr, dva);
                 }
             }
         }
@@ -102,20 +104,20 @@ static void _var_out(char* fname) {
 
 static void _boundary_out(void) {
     printf("nu du nv dv nw dw np dp\n");
-    for (int i = 0; i <= NB; i ++) {
+    for (int i = 0; i <= BNUM; i ++) {
         unsigned int b  = B[i];
-        unsigned int bu = f_see(b, _BT_U, MASK2);
-        unsigned int bv = f_see(b, _BT_V, MASK2);
-        unsigned int bw = f_see(b, _BT_W, MASK2);
-        unsigned int bp = f_see(b, _BT_P, MASK2);
-        unsigned int nu = f_see(bu, _BT_N, MASK1);
-        unsigned int du = f_see(bu, _BT_D, MASK1);
-        unsigned int nv = f_see(bv, _BT_N, MASK1);
-        unsigned int dv = f_see(bv, _BT_D, MASK1);
-        unsigned int nw = f_see(bw, _BT_N, MASK1);
-        unsigned int dw = f_see(bw, _BT_D, MASK1);
-        unsigned int np = f_see(bp, _BT_N, MASK1);
-        unsigned int dp = f_see(bp, _BT_D, MASK1);
+        unsigned int bu = f_see(b , _B_U, MASK2);
+        unsigned int bv = f_see(b , _B_V, MASK2);
+        unsigned int bw = f_see(b , _B_W, MASK2);
+        unsigned int bp = f_see(b , _B_P, MASK2);
+        unsigned int nu = f_see(bu, _B_N, MASK1);
+        unsigned int du = f_see(bu, _B_D, MASK1);
+        unsigned int nv = f_see(bv, _B_N, MASK1);
+        unsigned int dv = f_see(bv, _B_D, MASK1);
+        unsigned int nw = f_see(bw, _B_N, MASK1);
+        unsigned int dw = f_see(bw, _B_D, MASK1);
+        unsigned int np = f_see(bp, _B_N, MASK1);
+        unsigned int dp = f_see(bp, _B_D, MASK1);
         printf("%u  %u  %u  %u  %u  %u  %u  %u\n", nu, du, nv, dv, nw, dw, np, dp);
     }
 }
@@ -198,6 +200,7 @@ int main(void) {
 
     #pragma acc enter data copyin(F, U, UA, UP, UD, UC, UU, UUA, UUP, UUD, P, PD, PP, PPD, DVR, DVA, DVP, SGS, X, KX, J, G, C, BU, BP, BPP)
     contra(F, U, UC, UU, BU, X, KX, J);
+    turb_smagorinsky(F, U, BU, X, KX, J, SGS);
 
     sprintf(fname, "./data/var.csv.%d", n_file);
     _var_out(fname);
@@ -218,9 +221,8 @@ int main(void) {
         do {
             iter_poisson = 0;
             do {
-                // solver_sor(F, P, BP, DVP, C, res);
-                solver_jacobi(F, P, PD, BP, DVA, C, res);
-                bc_p_periodic(P);
+                solver_sor(F, P, BP, DVA, C, res);
+                // solver_jacobi(F, P, PD, BP, DVA, C, res);
                 iter_poisson ++;
             } while (res > EPOI && iter_poisson < MAXIT);
 
@@ -231,11 +233,10 @@ int main(void) {
             printf("\rs(%6d,%6d):p(%4d,%13.10lf),d(%13.10lf,%13.10lf)", step, iter_divergece, iter_poisson, res, dva, dvr);
             fflush(stdout);
         } while (dvr > EDIV);
+        turb_smagorinsky(F, U, BU, X, KX, J, SGS);
 
         // ns_correction_p(P, PP);
         _p_0_avg();
-        // bc_p_periodic(P);
-        bc_u_periodic(U);
 
         if (step % int(0.5 / DT) == 0 || step == NSTEP /* || step <= 100 */) {
             sprintf(fname, "./data/var.csv.%d", n_file);
