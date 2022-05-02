@@ -29,10 +29,14 @@ echo compiling tp.cpp...
 echo tp.cpp___________________________________________________ >> build.txt
 nvc++ -c ./src/tp.cpp -acc -Minfo=accel -o ./obj/tp.o         &>> build.txt
 
+echo compiling turb.cpp...
+echo turb.cpp_________________________________________________ >> build.txt
+nvc++ -c ./src/turb.cpp -acc -Minfo=accel -o ./obj/turb.o     &>> build.txt
+
 echo compiling main.cpp...
 echo main.cpp_________________________________________________ >> build.txt
 nvc++ -c ./src/main.cpp -acc -Minfo=accel -o ./obj/main.o     &>> build.txt
 
 echo compiling fluo...
 echo fluo_____________________________________________________ >> build.txt
-nvc++ ./obj/bc.o ./obj/contra.o ./obj/diver.o ./obj/ns.o ./obj/solver.o ./obj/tp.o ./obj/main.o -o ./bin/fluo -acc -Minfo=accel &>> build.txt
+nvc++ ./obj/bc.o ./obj/contra.o ./obj/diver.o ./obj/ns.o ./obj/solver.o ./obj/tp.o ./obj/turb.o ./obj/main.o -o ./bin/fluo -acc -Minfo=accel &>> build.txt
