@@ -1,0 +1,20 @@
+#ifndef PARA_H
+#define PARA_H
+
+/* fluid parameter */
+static const double   RE    = 10000;
+static const double   RI    = 1 / RE;
+
+/* solver parameter */
+static const double   DT    = 0.005;
+static const double   EPOI  = 1E-6;
+static const double   EDIV  = 1E-4;
+static const double   OMEGA = 1.2;
+static const double   ALPHA = 1.0 / 24.0;
+static const int      MAXIT = 1000;
+static const int      NSTEP = 20000;
+
+/* turbulence paratemer */
+static const double   C_s   = 0.1;
+
+#endif
