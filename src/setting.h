@@ -5,9 +5,9 @@
 #include "topo.h"
 #include "boundary.h"
 
-#define UINIT  UINFLOW
-#define VINIT  VINFLOW
-#define WINIT  WINFLOW
+#define UINIT  1.0
+#define VINIT  0.0
+#define WINIT  0.0
 #define PINIT  0
 
 #endif

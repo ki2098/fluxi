@@ -7,6 +7,7 @@
 #include "solver.h"
 #include "diver.h"
 #include "turb.h"
+#include "driver.h"
 
 static void _param_out(void) {
     FILE *fo;
@@ -61,10 +62,10 @@ static void _param_out(void) {
 }
 
 static void _var_out(char* fname) {
-    #pragma acc data present(X, U, UA, UP, UU, UUP, UUA, P, PP, SGS, DVR, DVP, DVA) 
+    #pragma acc data present(X, U, UA, UU, UUA, P, SGS, DVR, DVA) 
     {
     // acc data starts
-    #pragma acc update host(X, U, UA, UP, UU, UUP, UUA, P, PP, SGS, DVR, DVP, DVA)
+    #pragma acc update host(X, U, UA, UU, UUA, P, SGS, DVR, DVA)
     
     FILE *fo;
     fo = fopen(fname, "w+t");
@@ -110,28 +111,15 @@ static void _boundary_out(void) {
         unsigned int bv = f_see(b , _B_V, MASK2);
         unsigned int bw = f_see(b , _B_W, MASK2);
         unsigned int bp = f_see(b , _B_P, MASK2);
-        unsigned int nu = f_see(bu, _B_N, MASK1);
-        unsigned int du = f_see(bu, _B_D, MASK1);
-        unsigned int nv = f_see(bv, _B_N, MASK1);
-        unsigned int dv = f_see(bv, _B_D, MASK1);
-        unsigned int nw = f_see(bw, _B_N, MASK1);
-        unsigned int dw = f_see(bw, _B_D, MASK1);
-        unsigned int np = f_see(bp, _B_N, MASK1);
-        unsigned int dp = f_see(bp, _B_D, MASK1);
+        unsigned int nu = f_see(bu, _NEUMANN, MASK1);
+        unsigned int du = f_see(bu, _DIRICHLET, MASK1);
+        unsigned int nv = f_see(bv, _NEUMANN, MASK1);
+        unsigned int dv = f_see(bv, _DIRICHLET, MASK1);
+        unsigned int nw = f_see(bw, _NEUMANN, MASK1);
+        unsigned int dw = f_see(bw, _DIRICHLET, MASK1);
+        unsigned int np = f_see(bp, _NEUMANN, MASK1);
+        unsigned int dp = f_see(bp, _DIRICHLET, MASK1);
         printf("%u  %u  %u  %u  %u  %u  %u  %u\n", nu, du, nv, dv, nw, dw, np, dp);
-    }
-}
-
-static void _clr_pp(void) {
-    #pragma acc kernels loop independent collapse(3) present(F, PP)
-    for (int i = 0; i < NNX; i ++) {
-        for (int j = 0; j < NNY; j ++) {
-            for (int k = 0; k < NNZ; k ++) {
-                if (f_see(F[i][j][k], _ACTIVE, MASK1)) {
-                    PP[i][j][k] = 0;
-                }
-            }
-        }
     }
 }
 
@@ -191,14 +179,19 @@ int main(void) {
     int    n_file         = 0;
     int    iter_poisson   = 0;
     int    iter_divergece = 0;
-    double dva, dvp, dvr;
+    double driver_p       = 0;
+    double avg;
+    double dva, dvr;
     double res;
 
     _init();
     _param_out();
     _boundary_out();
 
-    #pragma acc enter data copyin(F, U, UA, UP, UD, UC, UU, UUA, UUP, UUD, P, PD, PP, PPD, DVR, DVA, DVP, SGS, X, KX, J, G, C, BU, BP, BPP)
+    #pragma acc enter data copyin(F, U, UA, UC, UU, UUA, P, PD, DVR, DVA, SGS, X, KX, J, G, C, BU, BP)
+    bc_u_periodic(U);
+    bc_p_driver(P, driver_p);
+    bc_p_periodic(P);
     contra(F, U, UC, UU, BU, X, KX, J);
     turb_smagorinsky(F, U, BU, X, KX, J, SGS);
 
@@ -208,37 +201,39 @@ int main(void) {
 
     for (int step = 1; step <= NSTEP; step ++) {
         ns_pseudo_c(F, U, UA, UU, BU, SGS, KX, J, C);
-        bc_u_outflow(U, UU, BU, X, KX);
+        bc_u_periodic(UA);
         contra(F, UA, UC, UUA, BU, X, KX, J);
         diver(F, UUA, DVA, J, dva);
 
-        // ns_correction_c(F, UP, UA, P, BP, KX);
-        // ns_correction_f(F, UP, UUP, UUA, BU, P, BP, X, KX, G);
-        // diver(F, UUP, DVP, J, dvp);
+        driver_p_gradient(U, KX, J, UINFLOW, driver_p);
+        bc_p_driver(P, driver_p);
 
-        // _clr_pp();
         iter_divergece = 0;
         do {
             iter_poisson = 0;
             do {
                 solver_sor(F, P, BP, DVA, C, res);
-                // solver_jacobi(F, P, PD, BP, DVA, C, res);
+                bc_p_driver(P, driver_p);
+                bc_p_periodic(P);
                 iter_poisson ++;
             } while (res > EPOI && iter_poisson < MAXIT);
 
             ns_correction_c(F, U, UA, P, BP, KX);
+            bc_u_periodic(U);
             ns_correction_f(F, U, UU, UUA, BU, P, BP, X, KX, G);
+            driver_monitor(UU, X, KX, avg);
             diver(F, UU, DVR, J, dvr);
             iter_divergece ++;
-            printf("\rs(%6d,%6d):p(%4d,%13.10lf),d(%13.10lf,%13.10lf)", step, iter_divergece, iter_poisson, res, dva, dvr);
+            printf("\rs(%6d,%6d):p(%4d,%13.10lf),d(%13.10lf,%13.10lf),u(%.6lf)", step, iter_divergece, iter_poisson, res, dva, dvr, avg);
             fflush(stdout);
         } while (dvr > EDIV);
         turb_smagorinsky(F, U, BU, X, KX, J, SGS);
 
-        // ns_correction_p(P, PP);
         _p_0_avg();
+        bc_p_driver(P, driver_p);
+        bc_p_periodic(P);
 
-        if (step % int(0.5 / DT) == 0 || step == NSTEP /* || step <= 100 */) {
+        if (step % int(0.5 / DT) == 0 || step == NSTEP) {
             sprintf(fname, "./data/var.csv.%d", n_file);
             _var_out(fname);
             n_file ++;
@@ -248,7 +243,7 @@ int main(void) {
 
     printf("NFile=%d\n", n_file);
 
-    #pragma acc exit data copyout(F, U, UA, UP, UD, UC, UU, UUA, UUP, UUD, P, PD, PP, PPD, DVR, DVA, DVP, SGS, X, KX, J, G, C, BU, BP, BPP)
+    #pragma acc exit data copyout(F, U, UA, UC, UU, UUA, P, PD, DVR, DVA, SGS, X, KX, J, G, C, BU, BP)
 
 
     return 0;

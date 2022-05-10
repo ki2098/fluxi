@@ -179,6 +179,9 @@ void ns_pseudo_c(
                     double uw2, us2, ub2;
                     double ufe, vfn, wft;
                     double ufw, vfs, wfb;
+                    double nc0;
+                    double ne1, nn1, nt1;
+                    double nw1, ns1, nb1;
                     double c01, c02, c03;
                     double c07, c08, c09;
                     double sgs, det;
@@ -500,9 +503,46 @@ void ns_pseudo_c(
                     dw2 = 0.5 * (un1 - us1) * kx2;
                     dw3 = 0.5 * (ut1 - ub1) * kx3;
 
-                    dn1 = 0.5 * (SGS[i + 1][j][k] - SGS[i - 1][j][k]) * kx1;
-                    dn2 = 0.5 * (SGS[i][j + 1][k] - SGS[i][j - 1][k]) * kx2;
-                    dn3 = 0.5 * (SGS[i][j][k + 1] - SGS[i][j][k - 1]) * kx3;
+                    nc0 = SGS[i    ][j    ][k    ];
+                    ne1 = SGS[i + 1][j    ][k    ];
+                    nn1 = SGS[i    ][j + 1][k    ];
+                    nt1 = SGS[i    ][j    ][k + 1];
+                    nw1 = SGS[i - 1][j    ][k    ];
+                    ns1 = SGS[i    ][j - 1][k    ];
+                    nb1 = SGS[i    ][j    ][k - 1];
+                    b12 = f_see(B[f12], _B_Nt, MASK2);
+                    b13 = f_see(B[f13], _B_Nt, MASK2);
+                    b22 = f_see(B[f22], _B_Nt, MASK2);
+                    b23 = f_see(B[f23], _B_Nt, MASK2);
+                    b32 = f_see(B[f32], _B_Nt, MASK2);
+                    b33 = f_see(B[f33], _B_Nt, MASK2);
+                    if (f13) {
+                        _pre_bc_eva(m13, nc0, ne1, ref, dis);
+                        ne1 = 2 * bc_eva(b13, ref, dis, Nt_BOUNDARY_VALUE) - nc0;
+                    }
+                    if (f23) {
+                        _pre_bc_eva(m23, nc0, nn1, ref, dis);
+                        nn1 = 2 * bc_eva(b23, ref, dis, Nt_BOUNDARY_VALUE) - nc0;
+                    }
+                    if (f33) {
+                        _pre_bc_eva(m33, nc0, nt1, ref, dis);
+                        nt1 = 2 * bc_eva(b33, ref, dis, Nt_BOUNDARY_VALUE) - nc0;
+                    }
+                    if (f12) {
+                        _pre_bc_eva(m12, nw1, nc0, ref, dis);
+                        nw1 = 2 * bc_eva(b12, ref, dis, Nt_BOUNDARY_VALUE) - nc0;
+                    }
+                    if (f22) {
+                        _pre_bc_eva(m22, ns1, nc0, ref, dis);
+                        ns1 = 2 * bc_eva(b22, ref, dis, Nt_BOUNDARY_VALUE) - nc0;
+                    }
+                    if (f32) {
+                        _pre_bc_eva(m32, nb1, nc0, ref, dis);
+                        nb1 = 2 * bc_eva(b32, ref, dis, Nt_BOUNDARY_VALUE) - nc0;
+                    }
+                    dn1 = 0.5 * (ne1 - nw1) * kx1;
+                    dn2 = 0.5 * (nn1 - ns1) * kx2;
+                    dn3 = 0.5 * (nt1 - nb1) * kx3;
                     ed1 = (du1 + du1) * dn1 + (du2 + dv1) * dn2 + (du3 + dw1) * dn3;
                     ed2 = (dv1 + du2) * dn1 + (dv2 + dv2) * dn2 + (dv3 + dw2) * dn3;
                     ed3 = (dw1 + du3) * dn1 + (dw2 + dv3) * dn2 + (dw3 + dw3) * dn3;

@@ -25,13 +25,13 @@ void _cell(
 void _face(
     unsigned int F[NNX][NNY][NNZ]
 ) {
-    //  inflow and outflow boundary
-    for (int j = J0; j <= J1; j ++) {
-        for (int k = K0; k <= K1; k ++) {
-            F[I0 - 1][j][k] = f_set(F[I0 - 1][j][k], _F_E, INFLOW , MASK8);
-            F[I1    ][j][k] = f_set(F[I1    ][j][k], _F_E, OUTFLOW, MASK8);
-        }
-    }
+    // //  inflow and outflow boundary
+    // for (int j = J0; j <= J1; j ++) {
+    //     for (int k = K0; k <= K1; k ++) {
+    //         F[I0 - 1][j][k] = f_set(F[I0 - 1][j][k], _F_E, INFLOW , MASK8);
+    //         F[I1    ][j][k] = f_set(F[I1    ][j][k], _F_E, OUTFLOW, MASK8);
+    //     }
+    // }
 
     //  domain north and south boundary
     for (int i = I0; i <= I1; i ++) {
@@ -44,8 +44,8 @@ void _face(
     //  domain top and bottom boundary
     for (int i = I0; i <= I1; i ++) {
         for (int j = J0; j <= J1; j ++) {
-            F[i][j][K0 - 1] = f_set(F[i][j][K0 - 1], _F_T, WALL  , MASK8);
-            F[i][j][K1    ] = f_set(F[i][j][K1    ], _F_T, SLIP_Z, MASK8);
+            F[i][j][K0 - 1] = f_set(F[i][j][K0 - 1], _F_T, WALL, MASK8);
+            F[i][j][K1    ] = f_set(F[i][j][K1    ], _F_T, WALL, MASK8);
         }
     }
 
