@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "tp.h"
 
 void _cell(
@@ -115,20 +117,44 @@ void tp_x(
     double  G[NNX][NNY][NNZ][3],
     double  C[NNX][NNY][NNZ][6]
 ) {
-    double dx, dy, dz;
-    dx = (X1 - X0) / NX;
-    dy = (Y1 - Y0) / NY;
-    dz = (Z1 - Z0) / NZ;
+    FILE* f;
+    char line[128];
 
+    f = fopen("./mesh/x.cell", "r");
     for (int i = 0; i < NNX; i ++) {
+        fgets(line, 128, f);
+        double x = strtod(line, NULL);
         for (int j = 0; j < NNY; j ++) {
             for (int k = 0; k < NNZ; k ++) {
-                X[i][j][k][_X] = (i - I0) * dx + 0.5 * dx;
-                X[i][j][k][_Y] = (j - J0) * dy + 0.5 * dy;
-                X[i][j][k][_Z] = (k - K0) * dz + 0.5 * dz;
+                X[i][j][k][_X] = x;
             }
         }
     }
+    fclose(f);
+
+    f = fopen("./mesh/y.cell", "r");
+    for (int j = 0; j < NNY; j ++) {
+        fgets(line, 128, f);
+        double y = strtod(line, NULL);
+        for (int i = 0; i < NNX; i ++) {
+            for (int k = 0; k < NNZ; k ++) {
+                X[i][j][k][_Y] = y;
+            }
+        }
+    }
+    fclose(f);
+
+    f = fopen("./mesh/z.cell", "r");
+    for (int k = 0; k < NNZ; k ++) {
+        fgets(line, 128, f);
+        double z = strtod(line, NULL);
+        for (int i = 0; i < NNX; i ++) {
+            for (int j = 0; j < NNY; j ++) {
+                X[i][j][k][_Z] = z;
+            }
+        }
+    }
+    fclose(f);
 
     for (int i = I0 - 1; i <= I1 + 1; i ++) {
         for (int j = J0 - 1; j <= J1 + 1; j ++) {

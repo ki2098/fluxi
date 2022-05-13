@@ -15,12 +15,12 @@
 static const double X0   = 0.0;
 static const double Y0   = 0.0;
 static const double Z0   = 0.0;
-static const double X1   = 10.0;
-static const double Y1   = 5.0;
-static const double Z1   = 4.0;
+static const double X1   = 14.0;
+static const double Y1   = 6.4;
+static const double Z1   = 3.0;
 static const int    NX   = 200;
-static const int    NY   = 100;
-static const int    NZ   = 80;
+static const int    NY   = 150;
+static const int    NZ   = 150;
 static const int    NNX  = NX + 4;
 static const int    NNY  = NY + 4;
 static const int    NNZ  = NZ + 4;
@@ -32,17 +32,17 @@ static const int    K0   = 2;
 static const int    K1   = K0 - 1 + NZ;
 
 /* square cylinder */
-static const double X0sq = 2.0;
-static const double X1sq = 3.0;
-static const double Y0sq = 2.0;
-static const double Y1sq = 3.0;
+static const double X0sq = 3.0;
+static const double X1sq = 4.0;
+static const double Y0sq = 2.7;
+static const double Y1sq = 3.7;
 static const double Z0sq = Z0;
 static const double Z1sq = Z1;
-static const int    I0sq = 42;
-static const int    I1sq = 61;
-static const int    J0sq = 42;
-static const int    J1sq = 61;
+static const int    I0sq = 52;
+static const int    I1sq = 101;
+static const int    J0sq = 52;
+static const int    J1sq = 101;
 static const int    K0sq = K0;
-static const int    K1sq = 21;
+static const int    K1sq = 101;
 
 #endif

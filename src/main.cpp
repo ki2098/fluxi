@@ -103,6 +103,34 @@ static void _var_out(char* fname) {
     }
 }
 
+static void _average_out(char* fname) {
+    FILE *fo;
+    fo = fopen(fname, "w+t");
+    if (fo == NULL) {
+        printf("\nERROR when opening file\n");
+        fflush(stdout);
+    }
+    else {
+        fprintf(fo, "x,y,z,u,v,w,p\n");
+        double x, y, z, u, v, w, p;
+        for (int k = K0; k <= K1; k ++) {
+            for (int j = J0; j <= J1; j ++) {
+                for (int i = I0; i <= I1; i ++) {
+                    x =  X[i][j][k][_X];
+                    y =  X[i][j][k][_Y];
+                    z =  X[i][j][k][_Z];
+                    u = UR[i][j][k][_U];
+                    v = UR[i][j][k][_V];
+                    w = UR[i][j][k][_W];
+                    p = PR[i][j][k];
+                    fprintf(fo, "%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", x, y, z, u, v, w, p);
+                }
+            }
+        }
+        fclose(fo);
+    }
+}
+
 static void _boundary_out(void) {
     printf("nu du nv dv nw dw np dp\n");
     for (int i = 0; i <= BNUM; i ++) {
@@ -153,6 +181,33 @@ static void _p_0_avg(void) {
     }
 }
 
+static void _time_sum(void) {
+    #pragma acc kernels loop independent collapse(3) present(U, UR, P, PR)
+    for (int i = I0; i <= I1; i ++) {
+        for (int j = J0 ; j <= J1; j ++) {
+            for (int k = K0; k <= K1; k ++) {
+                UR[i][j][k][_U] += U[i][j][k][_U];
+                UR[i][j][k][_V] += U[i][j][k][_V];
+                UR[i][j][k][_W] += U[i][j][k][_W];
+                PR[i][j][k]     += P[i][j][k];
+            }
+        }
+    }
+}
+
+static void _time_average(int steps) {
+    for (int i = I0; i <= I1; i ++) {
+        for (int j = J0 ; j <= J1; j ++) {
+            for (int k = K0; k <= K1; k ++) {
+                UR[i][j][k][_U] /= steps;
+                UR[i][j][k][_V] /= steps;
+                UR[i][j][k][_W] /= steps;
+                PR[i][j][k]     /= steps;
+            }
+        }
+    }
+}
+
 static void _init(void) {
     tp_x(X, KX, J, G, C);
     tp_f(F);
@@ -179,6 +234,8 @@ int main(void) {
     int    n_file         = 0;
     int    iter_poisson   = 0;
     int    iter_divergece = 0;
+    int    average_range  = 50000;
+    int    step           = 0;
     double driver_p       = 0;
     double avg;
     double dva, dvr;
@@ -188,7 +245,7 @@ int main(void) {
     _param_out();
     _boundary_out();
 
-    #pragma acc enter data copyin(F, U, UA, UC, UU, UUA, P, PD, DVR, DVA, SGS, X, KX, J, G, C, BU, BP)
+    #pragma acc enter data copyin(F, U, UA, UC, UU, UUA, P, PD, DVR, DVA, SGS, X, KX, J, G, C, BU, BP, UR, PR)
     bc_u_periodic(U);
     bc_p_driver(P, driver_p);
     bc_p_periodic(P);
@@ -199,7 +256,7 @@ int main(void) {
     _var_out(fname);
     n_file ++;
 
-    for (int step = 1; step <= NSTEP; step ++) {
+    for (step = 1; step <= NSTEP; step ++) {
         ns_pseudo_c(F, U, UA, UU, BU, SGS, KX, J, C);
         bc_u_periodic(UA);
         contra(F, UA, UC, UUA, BU, X, KX, J);
@@ -226,7 +283,11 @@ int main(void) {
             iter_divergece ++;
             printf("\rs(%6d,%6d):p(%4d,%13.10lf),d(%13.10lf,%13.10lf),u(%.6lf)", step, iter_divergece, iter_poisson, res, dva, dvr, avg);
             fflush(stdout);
-        } while (dvr > EDIV);
+
+            // if (iter_divergece >= 100) {
+            //     goto END;
+            // }
+        } while (dvr > EDIV0);
         turb_smagorinsky(F, U, BU, X, KX, J, SGS);
 
         _p_0_avg();
@@ -238,13 +299,22 @@ int main(void) {
             _var_out(fname);
             n_file ++;
         }
+
+        if (step >= average_range) {
+            _time_sum();
+        }
     }
+END:
     printf("\n");
 
     printf("NFile=%d\n", n_file);
 
-    #pragma acc exit data copyout(F, U, UA, UC, UU, UUA, P, PD, DVR, DVA, SGS, X, KX, J, G, C, BU, BP)
+    _var_out((char*)"./data/final.csv");
 
+    #pragma acc exit data copyout(F, U, UA, UC, UU, UUA, P, PD, DVR, DVA, SGS, X, KX, J, G, C, BU, BP, UR, PR)
+
+    _time_average(step - average_range);
+    _average_out((char*)"./data/time_average.csv");
 
     return 0;
 }

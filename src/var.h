@@ -17,6 +17,8 @@ double        PD[NNX][NNY][NNZ]       = {0};
 double       DVR[NNX][NNY][NNZ]       = {0};
 double       DVA[NNX][NNY][NNZ]       = {0};
 double       SGS[NNX][NNY][NNZ]       = {0};
+double        UR[NNX][NNY][NNZ][3]    = {0};
+double        PR[NNX][NNY][NNZ]       = {0};
 
 /* coordinate variables */
 double         X[NNX][NNY][NNZ][3]    = {0};

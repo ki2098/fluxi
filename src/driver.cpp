@@ -7,8 +7,7 @@ void driver_monitor(
     double &avg
 ) {
     double sum = 0;
-    int    cnt = 0;
-    #pragma acc kernels loop independent collapse(2) reduction(+:sum, cnt) present(UU, X, KX) copy(sum, cnt)
+    #pragma acc kernels loop independent collapse(2) reduction(+:sum) present(UU, X, KX) copy(sum)
     for (int j = J0; j <= J1; j ++) {
         for (int k = K0 ; k <= K1; k ++) {
             double uu, x1, x2, x3, k1, k2, k3, de;
@@ -24,11 +23,10 @@ void driver_monitor(
 
             uu = uu / (de * k1);
             
-            cnt += 1;
-            sum += uu;
+            sum += uu / (k2 * k3);
         }
     }
-    avg = sum / cnt;
+    avg = sum / ((Z1 - Z0) * (Y1 - Y0));
 }
 
 void driver_p_gradient(
@@ -40,18 +38,15 @@ void driver_p_gradient(
 ) {
     double m0 = 0;
     double m1 = 0;
-    double a  = 0;
-    #pragma acc kernels loop independent collapse(2) reduction(+:m0, m1, a) present(U, J, KX) copyin(ubar) copy(m0, m1, a)
+    #pragma acc kernels loop independent collapse(2) reduction(+:m0, m1) present(U, J, KX) copyin(ubar) copy(m0, m1)
     for (int i = I0; i <= I1; i ++) {
         for (int j = J0; j <= J1; j ++) {
             for (int k = K0; k <= K1; k ++) {
                 m0 += U[i][j][k][_U] * J[i][j][k];
                 m1 += ubar           * J[i][j][k];
-                if (i == I0) {
-                    a += 1.0 / (KX[i][j][k][_Y] * KX[i][j][k][_Z]);
-                }
             }
         }
     }
+    double a = (Z1 - Z0) * (Y1 - Y0);
     driver_p = (m1 - m0) / (DT * a);
 }
