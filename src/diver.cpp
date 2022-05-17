@@ -30,7 +30,7 @@ void diver(
                     det =  J[i    ][j    ][k    ];
 
                     dc0 = (ufe + vfn + wft - ufw - vfs - wfb) / det;
-                    sum = sum + dc0 * dc0;
+                    sum = sum + dc0 * dc0 * det;
                 
                     DIV[i][j][k] = dc0;
                     cnt += 1;
@@ -40,5 +40,5 @@ void diver(
         }
     }
 
-    div = sqrt(sum / cnt);
+    div = sqrt(sum / ((X1 - X0) * (Y1 - Y0) * (Z1 - Z0)));
 }

@@ -74,8 +74,8 @@ static void _var_out(char* fname) {
         fflush(stdout);
     }
     else {
-        fprintf(fo, "x,y,z,u,v,w,ju,jv,jw,p,nue,dvr,dva\n");
-        double x, y, z, u, v, w, ju, jv, jw, p, nue, dvr, dva;
+        fprintf(fo, "x,y,z,u,v,w,p,nue,dvr,dva\n");
+        double x, y, z, u, v, w, p, nue, dvr, dva;
         for (int k = K0; k <= K1; k ++) {
             for (int j = J0; j <= J1; j ++) {
                 for (int i = I0; i <= I1; i ++) {
@@ -85,14 +85,11 @@ static void _var_out(char* fname) {
                     u   =   U[i][j][k][_U];
                     v   =   U[i][j][k][_V];
                     w   =   U[i][j][k][_W];
-                    ju  =  UU[i][j][k][_U];
-                    jv  =  UU[i][j][k][_V];
-                    jw  =  UU[i][j][k][_W];
                     p   =   P[i][j][k];
                     nue = SGS[i][j][k];
                     dvr = DVR[i][j][k];
                     dva = DVA[i][j][k];
-                    fprintf(fo, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", x, y, z, u, v, w, ju, jv, jw, p, nue, dvr, dva);
+                    fprintf(fo, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", x, y, z, u, v, w, p, nue, dvr, dva);
                 }
             }
         }
@@ -234,7 +231,7 @@ int main(void) {
     int    n_file         = 0;
     int    iter_poisson   = 0;
     int    iter_divergece = 0;
-    int    average_range  = 50000;
+    int    average_range  = 200000;
     int    step           = 0;
     double driver_p       = 0;
     double avg;
@@ -244,6 +241,15 @@ int main(void) {
     _init();
     _param_out();
     _boundary_out();
+
+    printf(
+        "%lf,%lf,%lf,%lf,%lf\n", 
+        X[I0sq][J0sq][K1sq + 1][_Z] - Z1sq, 
+        X0sq - X[I0sq - 1][J0sq][K0sq][_X], 
+        X[I1sq + 1][J0sq][K0sq][_X] - X1sq,
+        Y0sq - X[I0sq][J0sq - 1][K0sq][_Y],
+        X[I0sq][J1sq + 1][K0sq][_Y] - Y1sq
+    );
 
     #pragma acc enter data copyin(F, U, UA, UC, UU, UUA, P, PD, DVR, DVA, SGS, X, KX, J, G, C, BU, BP, UR, PR)
     bc_u_periodic(U);
@@ -294,7 +300,7 @@ int main(void) {
         bc_p_driver(P, driver_p);
         bc_p_periodic(P);
 
-        if (step % int(0.5 / DT) == 0 || step == NSTEP) {
+        if (step % int(1.0 / DT) == 0 || step == NSTEP) {
             sprintf(fname, "./data/var.csv.%d", n_file);
             _var_out(fname);
             n_file ++;
