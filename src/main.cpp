@@ -231,7 +231,7 @@ int main(void) {
     int    n_file         = 0;
     int    iter_poisson   = 0;
     int    iter_divergece = 0;
-    int    average_range  = 200000;
+    int    average_range  = 100000;
     int    step           = 0;
     double driver_p       = 0;
     double avg;
@@ -256,7 +256,7 @@ int main(void) {
     bc_p_driver(P, driver_p);
     bc_p_periodic(P);
     contra(F, U, UC, UU, BU, X, KX, J);
-    turb_smagorinsky(F, U, BU, X, KX, J, SGS);
+    turb_csm(F, U, BU, X, KX, J, SGS);
 
     sprintf(fname, "./data/var.csv.%d", n_file);
     _var_out(fname);
@@ -275,7 +275,7 @@ int main(void) {
         do {
             iter_poisson = 0;
             do {
-                solver_sor(F, P, BP, DVA, C, res);
+                solver_sor(F, P, BP, DVA, G, J, res);
                 bc_p_driver(P, driver_p);
                 bc_p_periodic(P);
                 iter_poisson ++;
@@ -294,7 +294,7 @@ int main(void) {
             //     goto END;
             // }
         } while (dvr > EDIV0);
-        turb_smagorinsky(F, U, BU, X, KX, J, SGS);
+        turb_csm(F, U, BU, X, KX, J, SGS);
 
         _p_0_avg();
         bc_p_driver(P, driver_p);

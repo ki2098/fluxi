@@ -20,7 +20,7 @@ static const double Y1   = 6.4;
 static const double Z1   = 3.0;
 static const int    NX   = 200;
 static const int    NY   = 150;
-static const int    NZ   = 150;
+static const int    NZ   = 120;
 static const int    NNX  = NX + 4;
 static const int    NNY  = NY + 4;
 static const int    NNZ  = NZ + 4;
@@ -43,6 +43,6 @@ static const int    I1sq = 101;
 static const int    J0sq = 52;
 static const int    J1sq = 101;
 static const int    K0sq = K0;
-static const int    K1sq = 101;
+static const int    K1sq = 71;
 
 #endif

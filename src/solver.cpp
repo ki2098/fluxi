@@ -19,13 +19,14 @@ void solver_sor(
     double        P[NNX][NNY][NNZ],
     double       BP[NNX][NNY][NNZ][3],
     double       PS[NNX][NNY][NNZ],
-    double        C[NNX][NNY][NNZ][6],
+    double        G[NNX][NNY][NNZ][3],
+    double        J[NNX][NNY][NNZ],
     double       &res
 ) {
     double err = 0;
     int    cnt = 0;
 
-    #pragma acc kernels loop independent collapse(3) reduction(+:err, cnt) present(F, P, BP, PS, C) copy(err, cnt) copyin(B)
+    #pragma acc kernels loop independent collapse(3) reduction(+:err, cnt) present(F, P, BP, PS, G, J) copy(err, cnt) copyin(B)
     for (int i = I0; i <= I1; i ++) {
         for (int j = J0; j <= J1; j ++) {
             for (int k = K0; k <= K1; k ++) {
@@ -45,18 +46,24 @@ void solver_sor(
                     double pc0;
                     double pe1, pn1, pt1;
                     double pw1, ps1, pb1;
-                    double c01, c02, c03;
-                    double c07, c08, c09;
+                    double g1c, g2c, g3c;
+                    double g1e, g2n, g3t;
+                    double g1w, g2s, g3b;
+                    double det;
                     double ref, dis;
                     double rhs, rc0;
 
                     rhs = PS[i    ][j    ][k    ] / DT;
-                    c01 =  C[i    ][j    ][k    ][0];
-                    c02 =  C[i    ][j    ][k    ][1];
-                    c03 =  C[i    ][j    ][k    ][2];
-                    c07 =  C[i    ][j    ][k    ][3];
-                    c08 =  C[i    ][j    ][k    ][4];
-                    c09 =  C[i    ][j    ][k    ][5];
+                    det =  J[i    ][j    ][k    ];
+                    g1c =  G[i    ][j    ][k    ][_X];
+                    g2c =  G[i    ][j    ][k    ][_Y];
+                    g3c =  G[i    ][j    ][k    ][_Z];
+                    g1e =  G[i + 1][j    ][k    ][_X];
+                    g2n =  G[i    ][j + 1][k    ][_Y];
+                    g3t =  G[i    ][j    ][k + 1][_Z];
+                    g1w =  G[i - 1][j    ][k    ][_X];
+                    g2s =  G[i    ][j - 1][k    ][_Y];
+                    g3b =  G[i    ][j    ][k - 1][_Z];
                     pc0 =  P[i    ][j    ][k    ];
                     pe1 =  P[i + 1][j    ][k    ];
                     pn1 =  P[i    ][j + 1][k    ];
@@ -113,13 +120,14 @@ void solver_sor(
                         pb1 = 2 * bc_eva(b32, ref, dis, BP[i][j][k - 1][_T]) - pc0;
                     }
 
-                    ac0 = - 2 * (c01 + c02 + c03);
-                    ae1 = c01 - 0.5 * c07;
-                    an1 = c02 - 0.5 * c08;
-                    at1 = c03 - 0.5 * c09;
-                    aw1 = c01 + 0.5 * c07;
-                    as1 = c02 + 0.5 * c08;
-                    ab1 = c03 + 0.5 * c09;
+                    double ddet = 2 * det;
+                    ae1 = (g1e + g1c) / ddet;
+                    an1 = (g2n + g2c) / ddet;
+                    at1 = (g3t + g3c) / ddet;
+                    aw1 = (g1w + g1c) / ddet;
+                    as1 = (g2s + g2c) / ddet;
+                    ab1 = (g3b + g3c) / ddet;
+                    ac0 = - (ae1 + an1 + at1 + aw1 + as1 + ab1);
                     rc0 = (rhs - ae1 * pe1 - an1 * pn1 - at1 * pt1 - aw1 * pw1 - as1 * ps1 - ab1 * pb1) / ac0 - pc0;
                     err = err + rc0 * rc0;
 
@@ -130,7 +138,7 @@ void solver_sor(
         }
     }
 
-    #pragma acc kernels loop independent collapse(3) reduction(+:err, cnt) present(F, P, BP, PS, C) copy(err, cnt) copyin(B)
+    #pragma acc kernels loop independent collapse(3) reduction(+:err, cnt) present(F, P, BP, PS, G, J) copy(err, cnt) copyin(B)
     for (int i = I0; i <= I1; i ++) {
         for (int j = J0; j <= J1; j ++) {
             for (int k = K0; k <= K1; k ++) {
@@ -150,18 +158,24 @@ void solver_sor(
                     double pc0;
                     double pe1, pn1, pt1;
                     double pw1, ps1, pb1;
-                    double c01, c02, c03;
-                    double c07, c08, c09;
+                    double g1c, g2c, g3c;
+                    double g1e, g2n, g3t;
+                    double g1w, g2s, g3b;
+                    double det;
                     double ref, dis;
                     double rhs, rc0;
 
                     rhs = PS[i    ][j    ][k    ] / DT;
-                    c01 =  C[i    ][j    ][k    ][0];
-                    c02 =  C[i    ][j    ][k    ][1];
-                    c03 =  C[i    ][j    ][k    ][2];
-                    c07 =  C[i    ][j    ][k    ][3];
-                    c08 =  C[i    ][j    ][k    ][4];
-                    c09 =  C[i    ][j    ][k    ][5];
+                    det =  J[i    ][j    ][k    ];
+                    g1c =  G[i    ][j    ][k    ][_X];
+                    g2c =  G[i    ][j    ][k    ][_Y];
+                    g3c =  G[i    ][j    ][k    ][_Z];
+                    g1e =  G[i + 1][j    ][k    ][_X];
+                    g2n =  G[i    ][j + 1][k    ][_Y];
+                    g3t =  G[i    ][j    ][k + 1][_Z];
+                    g1w =  G[i - 1][j    ][k    ][_X];
+                    g2s =  G[i    ][j - 1][k    ][_Y];
+                    g3b =  G[i    ][j    ][k - 1][_Z];
                     pc0 =  P[i    ][j    ][k    ];
                     pe1 =  P[i + 1][j    ][k    ];
                     pn1 =  P[i    ][j + 1][k    ];
@@ -218,13 +232,14 @@ void solver_sor(
                         pb1 = 2 * bc_eva(b32, ref, dis, BP[i][j][k - 1][_T]) - pc0;
                     }
 
-                    ac0 = - 2 * (c01 + c02 + c03);
-                    ae1 = c01 - 0.5 * c07;
-                    an1 = c02 - 0.5 * c08;
-                    at1 = c03 - 0.5 * c09;
-                    aw1 = c01 + 0.5 * c07;
-                    as1 = c02 + 0.5 * c08;
-                    ab1 = c03 + 0.5 * c09;
+                    double ddet = 2 * det;
+                    ae1 = (g1e + g1c) / ddet;
+                    an1 = (g2n + g2c) / ddet;
+                    at1 = (g3t + g3c) / ddet;
+                    aw1 = (g1w + g1c) / ddet;
+                    as1 = (g2s + g2c) / ddet;
+                    ab1 = (g3b + g3c) / ddet;
+                    ac0 = - (ae1 + an1 + at1 + aw1 + as1 + ab1);
                     rc0 = (rhs - ae1 * pe1 - an1 * pn1 - at1 * pt1 - aw1 * pw1 - as1 * ps1 - ab1 * pb1) / ac0 - pc0;
                     err = err + rc0 * rc0;
 
