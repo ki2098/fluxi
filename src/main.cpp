@@ -306,7 +306,7 @@ int main(void) {
             n_file ++;
         }
 
-        if (step >= average_range) {
+        if (step > average_range) {
             _time_sum();
         }
     }
