@@ -11,8 +11,7 @@ void tp_x(
     double  X[NNX][NNY][NNZ][3],
     double KX[NNX][NNY][NNZ][3],
     double  J[NNX][NNY][NNZ],
-    double  G[NNX][NNY][NNZ][3],
-    double  C[NNX][NNY][NNZ][6]
+    double  G[NNX][NNY][NNZ][3]
 );
 
 #endif

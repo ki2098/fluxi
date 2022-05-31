@@ -8,11 +8,12 @@ void ns_pseudo_c(
     double         U[NNX][NNY][NNZ][3],
     double        UA[NNX][NNY][NNZ][3],
     double        UU[NNX][NNY][NNZ][3],
+    double        UT[NNX][NNY][NNZ][3],
     double        BU[NNX][NNY][NNZ][3][3],
     double       SGS[NNX][NNY][NNZ],
-    double        KX[NNX][NNY][NNZ][3],
+    double         X[NNX][NNY][NNZ][3],
     double         J[NNX][NNY][NNZ],
-    double         C[NNX][NNY][NNZ][6]
+    double         G[NNX][NNY][NNZ][3]
 );
 
 void ns_correction_c(

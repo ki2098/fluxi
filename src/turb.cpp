@@ -196,7 +196,7 @@ void turb_smagorinsky(
                     dwz = kx3 * 0.5 * (ut1 - ub1);
 
                     
-                    a01 = U[i][j][K1][_U] / (X[i][j][K1][_Z] - Z0);
+                    a01 = U[i][j][K0][_U] / (X[i][j][K0][_Z] - Z0);
                     a02 = (X[i][j][k][_Z] - Z0) * sqrt(RE * fabs(a01));
                     a03 = 1.0 - exp(- a02 / 25.0);
 
@@ -237,6 +237,12 @@ void turb_smagorinsky(
                         if (a03_ < a03) {
                             a03 = a03_;
                         }
+                    }
+                    a01_ = U[i][j][K1][_U] / (Z1 - X[i][j][K1][_Z]);
+                    a02_ = (Z1 - X[i][j][k][_Z]) * sqrt(RE * fabs(a01_));
+                    a03_ = 1.0 - exp(- a02_ / 25.0);
+                    if (a03_ < a03) {
+                        a03 = a03_;
                     }
 
                     d01 = 2 * dux * dux;

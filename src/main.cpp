@@ -17,14 +17,13 @@ static void _param_out(void) {
         fflush(stdout);
     }
     else {
-        fprintf(fo, "x,y,z,active,fe,fn,ft,me,mn,mt,k1x1,k2x2,k3x3,j,c1,c2,c3,c7,c8,c9,g11,g22,g33\n");
+        fprintf(fo, "x,y,z,active,fe,fn,ft,me,mn,mt,k1x1,k2x2,k3x3,j,g11,g22,g33\n");
         double x, y, z;
         int    flag, active;
         int    fe, fn, ft;
         int    me, mn, mt;
         double k1x1, k2x2, k3x3;
         double det;
-        double c1, c2, c3, c7, c8, c9;
         double g11, g22, g33;
         for (int k = K0 - 1; k <= K1 + 1; k ++) {
             for (int j = J0 - 1; j <= J1 + 1; j ++) {
@@ -37,12 +36,6 @@ static void _param_out(void) {
                     k2x2   = KX[i][j][k][_Y];
                     k3x3   = KX[i][j][k][_Z];
                     det    =  J[i][j][k];
-                    c1     =  C[i][j][k][0 ];
-                    c2     =  C[i][j][k][1 ];
-                    c3     =  C[i][j][k][2 ];
-                    c7     =  C[i][j][k][3 ];
-                    c8     =  C[i][j][k][4 ];
-                    c9     =  C[i][j][k][5 ];
                     g11    =  G[i][j][k][0 ];
                     g22    =  G[i][j][k][1 ];
                     g33    =  G[i][j][k][2 ];
@@ -53,7 +46,7 @@ static void _param_out(void) {
                     me     = f_see(flag, _M_E   , MASK1);
                     mn     = f_see(flag, _M_N   , MASK1);
                     mt     = f_see(flag, _M_T   , MASK1);
-                    fprintf(fo, "%.36lf,%.36lf,%.36lf,%d,%d,%d,%d,%d,%d,%d,%.36lf,%.36lf,%.36lf,%.36lf,%.36lf,%.36lf,%.36lf,%.36lf,%.36lf,%.36lf,%.36lf,%.36lf,%.36lf\n", x, y, z, active, fe, fn, ft, me, mn, mt, k1x1, k2x2, k3x3, det, c1, c2, c3, c7, c8, c9, g11, g22, g33);
+                    fprintf(fo, "%.36lf,%.36lf,%.36lf,%d,%d,%d,%d,%d,%d,%d,%.36lf,%.36lf,%.36lf,%.36lf,%.36lf,%.36lf,%.36lf\n", x, y, z, active, fe, fn, ft, me, mn, mt, k1x1, k2x2, k3x3, det, g11, g22, g33);
                 }
             }
         }
@@ -62,10 +55,10 @@ static void _param_out(void) {
 }
 
 static void _var_out(char* fname) {
-    #pragma acc data present(X, U, UA, UU, UUA, P, SGS, DVR, DVA) 
+    #pragma acc data present(X, U, UT, P, SGS, DVR, DVA) 
     {
     // acc data starts
-    #pragma acc update host(X, U, UA, UU, UUA, P, SGS, DVR, DVA)
+    #pragma acc update host(X, U, UT, P, SGS, DVR, DVA)
     
     FILE *fo;
     fo = fopen(fname, "w+t");
@@ -74,22 +67,25 @@ static void _var_out(char* fname) {
         fflush(stdout);
     }
     else {
-        fprintf(fo, "x,y,z,u,v,w,p,nue,dvr,dva\n");
-        double x, y, z, u, v, w, p, nue, dvr, dva;
-        for (int k = K0; k <= K1; k ++) {
-            for (int j = J0; j <= J1; j ++) {
-                for (int i = I0; i <= I1; i ++) {
+        fprintf(fo, "x,y,z,u,v,w,ut1,ut2,ut3,p,nue,dvr,dva\n");
+        double x, y, z, u, v, w, p, nue, dvr, dva, ut1, ut2, ut3;
+        for (int k = K0 - 1; k <= K1 + 1; k ++) {
+            for (int j = J0 - 1; j <= J1 + 1; j ++) {
+                for (int i = I0 - 1; i <= I1 + 1; i ++) {
                     x   =   X[i][j][k][_X];
                     y   =   X[i][j][k][_Y];
                     z   =   X[i][j][k][_Z];
                     u   =   U[i][j][k][_U];
                     v   =   U[i][j][k][_V];
                     w   =   U[i][j][k][_W];
+                    ut1 =  UT[i][j][k][_E];
+                    ut2 =  UT[i][j][k][_N];
+                    ut3 =  UT[i][j][k][_T];
                     p   =   P[i][j][k];
                     nue = SGS[i][j][k];
                     dvr = DVR[i][j][k];
                     dva = DVA[i][j][k];
-                    fprintf(fo, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", x, y, z, u, v, w, p, nue, dvr, dva);
+                    fprintf(fo, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", x, y, z, u, v, w, ut1, ut2, ut3, p, nue, dvr, dva);
                 }
             }
         }
@@ -206,7 +202,7 @@ static void _time_average(int steps) {
 }
 
 static void _init(void) {
-    tp_x(X, KX, J, G, C);
+    tp_x(X, KX, J, G);
     tp_f(F);
     
     for (int i = I0; i <= I1; i ++) {
@@ -251,8 +247,9 @@ int main(void) {
         X[I0sq][J1sq + 1][K0sq][_Y] - Y1sq
     );
 
-    #pragma acc enter data copyin(F, U, UA, UC, UU, UUA, P, PD, DVR, DVA, SGS, X, KX, J, G, C, BU, BP, UR, PR)
+    #pragma acc enter data copyin(F, U, UA, UC, UU, UUA, UT, P, PD, DVR, DVA, SGS, UR, PR, X, KX, J, G, BU, BP)
     bc_u_periodic(U);
+    bc_u_wall(F, U, UT, X);
     bc_p_driver(P, driver_p);
     bc_p_periodic(P);
     contra(F, U, UC, UU, BU, X, KX, J);
@@ -263,12 +260,12 @@ int main(void) {
     n_file ++;
 
     for (step = 1; step <= NSTEP; step ++) {
-        ns_pseudo_c(F, U, UA, UU, BU, SGS, KX, J, C);
+        ns_pseudo_c(F, U, UA, UU, UT, BU, SGS, X, J, G);
         bc_u_periodic(UA);
         contra(F, UA, UC, UUA, BU, X, KX, J);
         diver(F, UUA, DVA, J, dva);
 
-        driver_p_gradient(U, KX, J, UINFLOW, driver_p);
+        driver_p_gradient(U, J, UINFLOW, driver_p);
         bc_p_driver(P, driver_p);
 
         iter_divergece = 0;
@@ -284,7 +281,7 @@ int main(void) {
             ns_correction_c(F, U, UA, P, BP, KX);
             bc_u_periodic(U);
             ns_correction_f(F, U, UU, UUA, BU, P, BP, X, KX, G);
-            driver_monitor(UU, X, KX, avg);
+            driver_monitor(U, J, avg);
             diver(F, UU, DVR, J, dvr);
             iter_divergece ++;
             printf("\rs(%6d,%6d):p(%4d,%13.10lf),d(%13.10lf,%13.10lf),u(%.6lf)", step, iter_divergece, iter_poisson, res, dva, dvr, avg);
@@ -295,6 +292,7 @@ int main(void) {
             // }
         } while (dvr > EDIV0);
         turb_csm(F, U, BU, X, KX, J, SGS);
+        bc_u_wall(F, U, UT, X);
 
         _p_0_avg();
         bc_p_driver(P, driver_p);
@@ -317,7 +315,7 @@ END:
 
     _var_out((char*)"./data/final.csv");
 
-    #pragma acc exit data copyout(F, U, UA, UC, UU, UUA, P, PD, DVR, DVA, SGS, X, KX, J, G, C, BU, BP, UR, PR)
+    #pragma acc exit data copyout(F, U, UA, UC, UU, UUA, UT, P, PD, DVR, DVA, SGS, UR, PR, X, KX, J, G, BU, BP)
 
     _time_average(step - average_range);
     _average_out((char*)"./data/time_average.csv");

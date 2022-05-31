@@ -2,7 +2,7 @@
 #define PARA_H
 
 /* fluid parameter */
-static const double   RE    = 1870;
+static const double   RE    = 40000;
 static const double   RI    = 1 / RE;
 
 /* solver parameter */
