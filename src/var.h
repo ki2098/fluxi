@@ -27,6 +27,8 @@ double        KX[NNX][NNY][NNZ][3]    = {0};
 double         J[NNX][NNY][NNZ]       = {0};
 double         G[NNX][NNY][NNZ][3]    = {0};
 
+double        HP[NNX][NNY][NNZ][3]    = {0};
+
 /* boundary condition values */
 double        BU[NNX][NNY][NNZ][3][3] = {0};
 double        BP[NNX][NNY][NNZ][3]    = {0};

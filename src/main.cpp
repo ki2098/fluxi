@@ -55,10 +55,10 @@ static void _param_out(void) {
 }
 
 static void _var_out(char* fname) {
-    #pragma acc data present(X, U, UT, P, SGS, DVR, DVA) 
+    #pragma acc data present(X, U, HP, P, SGS, DVR, DVA) 
     {
     // acc data starts
-    #pragma acc update host(X, U, UT, P, SGS, DVR, DVA)
+    #pragma acc update host(X, U, HP, P, SGS, DVR, DVA)
     
     FILE *fo;
     fo = fopen(fname, "w+t");
@@ -67,8 +67,8 @@ static void _var_out(char* fname) {
         fflush(stdout);
     }
     else {
-        fprintf(fo, "x,y,z,u,v,w,ut1,ut2,ut3,p,nue,dvr,dva\n");
-        double x, y, z, u, v, w, p, nue, dvr, dva, ut1, ut2, ut3;
+        fprintf(fo, "x,y,z,u,v,w,hp1,hp2,hp3,p,nue,dvr,dva\n");
+        double x, y, z, u, v, w, p, nue, dvr, dva, hp1, hp2, hp3;
         for (int k = K0 - 1; k <= K1 + 1; k ++) {
             for (int j = J0 - 1; j <= J1 + 1; j ++) {
                 for (int i = I0 - 1; i <= I1 + 1; i ++) {
@@ -78,14 +78,14 @@ static void _var_out(char* fname) {
                     u   =   U[i][j][k][_U];
                     v   =   U[i][j][k][_V];
                     w   =   U[i][j][k][_W];
-                    ut1 =  UT[i][j][k][_E];
-                    ut2 =  UT[i][j][k][_N];
-                    ut3 =  UT[i][j][k][_T];
+                    hp1 =  HP[i][j][k][_E];
+                    hp2 =  HP[i][j][k][_N];
+                    hp3 =  HP[i][j][k][_T];
                     p   =   P[i][j][k];
                     nue = SGS[i][j][k];
                     dvr = DVR[i][j][k];
                     dva = DVA[i][j][k];
-                    fprintf(fo, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", x, y, z, u, v, w, ut1, ut2, ut3, p, nue, dvr, dva);
+                    fprintf(fo, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", x, y, z, u, v, w, hp1, hp2, hp3, p, nue, dvr, dva);
                 }
             }
         }
@@ -227,7 +227,7 @@ int main(void) {
     int    n_file         = 0;
     int    iter_poisson   = 0;
     int    iter_divergece = 0;
-    int    average_range  = 100000;
+    int    average_range  = 25000;
     int    step           = 0;
     double driver_p       = 0;
     double avg;
@@ -247,9 +247,9 @@ int main(void) {
         X[I0sq][J1sq + 1][K0sq][_Y] - Y1sq
     );
 
-    #pragma acc enter data copyin(F, U, UA, UC, UU, UUA, UT, P, PD, DVR, DVA, SGS, UR, PR, X, KX, J, G, BU, BP)
+    #pragma acc enter data copyin(F, U, UA, UC, UU, UUA, UT, P, PD, DVR, DVA, SGS, UR, PR, X, KX, J, G, HP, BU, BP)
     bc_u_periodic(U);
-    bc_u_wall(F, U, UT, X);
+    bc_u_wall(F, U, UT, X, HP);
     bc_p_driver(P, driver_p);
     bc_p_periodic(P);
     contra(F, U, UC, UU, BU, X, KX, J);
@@ -292,7 +292,7 @@ int main(void) {
             // }
         } while (dvr > EDIV0);
         turb_csm(F, U, BU, X, KX, J, SGS);
-        bc_u_wall(F, U, UT, X);
+        bc_u_wall(F, U, UT, X, HP);
 
         _p_0_avg();
         bc_p_driver(P, driver_p);
@@ -315,7 +315,7 @@ END:
 
     _var_out((char*)"./data/final.csv");
 
-    #pragma acc exit data copyout(F, U, UA, UC, UU, UUA, UT, P, PD, DVR, DVA, SGS, UR, PR, X, KX, J, G, BU, BP)
+    #pragma acc exit data copyout(F, U, UA, UC, UU, UUA, UT, P, PD, DVR, DVA, SGS, UR, PR, X, KX, J, G, HP, BU, BP)
 
     _time_average(step - average_range);
     _average_out((char*)"./data/time_average.csv");

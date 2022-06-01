@@ -44,7 +44,8 @@ void bc_u_wall(
     unsigned int  F[NNX][NNY][NNZ],
     double        U[NNX][NNY][NNZ][3],
     double       UT[NNX][NNY][NNZ][3],
-    double        X[NNX][NNY][NNZ][3]
+    double        X[NNX][NNY][NNZ][3],
+    double       HP[NNX][NNY][NNZ][3]
 );
 
 void bc_u_periodic(

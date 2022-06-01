@@ -18,9 +18,9 @@ static const double Z0   = 0.0;
 static const double X1   = 15.0;
 static const double Y1   = 7.0;
 static const double Z1   = 2.0;
-static const int    NX   = 180;
-static const int    NY   = 120;
-static const int    NZ   = 100;
+static const int    NX   = 150;
+static const int    NY   = 80;
+static const int    NZ   = 50;
 static const int    NNX  = NX + 4;
 static const int    NNY  = NY + 4;
 static const int    NNZ  = NZ + 4;
@@ -39,10 +39,10 @@ static const double Y1sq = 4.0;
 static const double Z0sq = Z0;
 static const double Z1sq = 1.0;
 static const int    I0sq = 52;
-static const int    I1sq = 91;
-static const int    J0sq = 42;
-static const int    J1sq = 81;
+static const int    I1sq = 71;
+static const int    J0sq = 32;
+static const int    J1sq = 51;
 static const int    K0sq = K0;
-static const int    K1sq = 61;
+static const int    K1sq = 26;
 
 #endif

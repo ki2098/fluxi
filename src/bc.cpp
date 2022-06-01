@@ -1,12 +1,16 @@
 #include <math.h>
 #include "bc.h"
 
-static double _bc_wall_func_newton(
-    double up,
-    double hp
+static void _bc_wall_func_newton(
+    double  up,
+    double  hp,
+    double &utp,
+    double &hpp
 ) {
     if (up < 1e-6) {
-        return 0;
+        utp = 0;
+        hpp = 0;
+        return;
     }
     double utm, upm, hpm, dup;
     double ki = 1 / 0.4;
@@ -26,7 +30,8 @@ static double _bc_wall_func_newton(
             break;
         }
     }
-    return utm;
+    utp = utm;
+    hpp = hpm;
 }
 
 /* what to be done at initialization */
@@ -148,9 +153,10 @@ void bc_u_wall(
     unsigned int  F[NNX][NNY][NNZ],
     double        U[NNX][NNY][NNZ][3],
     double       UT[NNX][NNY][NNZ][3],
-    double        X[NNX][NNY][NNZ][3]
+    double        X[NNX][NNY][NNZ][3],
+    double       HP[NNX][NNY][NNZ][3]
 ) {
-    #pragma acc kernels loop independent collapse(3) present(F, U, UT, X)
+    #pragma acc kernels loop independent collapse(3) present(F, U, UT, X, HP)
     for (int i = I0 - 1; i <= I1; i ++) {
         for (int j = J0 - 1; j <= J1; j ++) {
             for (int k = K0 - 1; k <= K1; k ++) {
@@ -165,15 +171,16 @@ void bc_u_wall(
                 m23 = f_see(fff, _M_N, MASK1);
                 m33 = f_see(fff, _M_T, MASK1);
 
-                double u1, u2, u3, uu, dd, ut;
+                double u1, u2, u3, uu, dd, ut, hp;
                 if (f13 == WALL) {
                     u1 = U[i + m13][j][k][_U];
                     u2 = U[i + m13][j][k][_V];
                     u3 = U[i + m13][j][k][_W];
                     uu = sqrt(u1 * u1 + u2 * u2 + u3 * u3);
                     dd = 0.5 * fabs(X[i + 1][j][k][_X] - X[i][j][k][_X]);
-                    ut = _bc_wall_func_newton(uu, dd);
+                    _bc_wall_func_newton(uu, dd, ut, hp);
                     UT[i][j][k][_E] = ut;
+                    HP[i][j][k][_E] = hp;
                 }
                 if (f23 == WALL) {
                     u1 = U[i][j + m23][k][_U];
@@ -181,8 +188,9 @@ void bc_u_wall(
                     u3 = U[i][j + m23][k][_W];
                     uu = sqrt(u1 * u1 + u2 * u2 + u3 * u3);
                     dd = 0.5 * fabs(X[i][j + 1][k][_Y] - X[i][j][k][_Y]);
-                    ut = _bc_wall_func_newton(uu, dd);
+                    _bc_wall_func_newton(uu, dd, ut, hp);
                     UT[i][j][k][_N] = ut;
+                    HP[i][j][k][_N] = hp;
                 }
                 if (f33 == WALL) {
                     u1 = U[i][j][k + m33][_U];
@@ -190,8 +198,9 @@ void bc_u_wall(
                     u3 = U[i][j][k + m33][_W];
                     uu = sqrt(u1 * u1 + u2 * u2 + u3 * u3);
                     dd = 0.5 * fabs(X[i][j][k + 1][_Z] - X[i][j][k][_Z]);
-                    ut = _bc_wall_func_newton(uu, dd);
+                    _bc_wall_func_newton(uu, dd, ut, hp);
                     UT[i][j][k][_T] = ut;
+                    HP[i][j][k][_T] = hp;
                 }
             }
         }
