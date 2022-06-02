@@ -195,56 +195,6 @@ void turb_smagorinsky(
                     dwy = kx2 * 0.5 * (un1 - us1);
                     dwz = kx3 * 0.5 * (ut1 - ub1);
 
-                    
-                    a01 = U[i][j][K0][_U] / (X[i][j][K0][_Z] - Z0);
-                    a02 = (X[i][j][k][_Z] - Z0) * sqrt(RE * fabs(a01));
-                    a03 = 1.0 - exp(- a02 / 25.0);
-
-                    double a01_, a02_, a03_;
-                    if (i >= I0sq && i <= I1sq && j >= J0sq && j <= J1sq && k >= K1sq + 1) {
-                        a01 = U[i][j][K1sq + 1][_U] / (X[i][j][K1sq + 1][_Z] - Z1sq);
-                        a02 = (X[i][j][k][_Z] - Z1sq) * sqrt(RE * fabs(a01));
-                        a03 = 1.0 - exp(- a02 / 25.0);
-                    }
-                    if (j >= J0sq && j <= J1sq && k >= K0sq && k <= K1sq && i <= I0sq - 1) {
-                        a01_ = U[I0sq - 1][j][k][_W] / (X0sq - X[I0sq - 1][j][k][_X]);
-                        a02_ = (X0sq - X[i][j][k][_X]) * sqrt(RE * fabs(a01_));
-                        a03_ = 1.0 - exp(- a02_ / 25.0);
-                        if (a03_ < a03) {
-                            a03 = a03_;
-                        }
-                    }
-                    if (j >= J0sq && j <= J1sq && k >= K0sq && k <= K1sq && i >= I1sq + 1) {
-                        a01_ = U[I1sq + 1][j][k][_W] / (X[I1sq + 1][j][k][_X] - X1sq);
-                        a02_ = (X[i][j][k][_X] - X1sq) * sqrt(RE * fabs(a01_));
-                        a03_ = 1.0 - exp(- a02_ / 25.0);
-                        if (a03_ < a03) {
-                            a03 = a03_;
-                        }
-                    }
-                    if (i >= I0sq && i <= I1sq && k >= K0sq && k <= K1sq && j <= J0sq - 1) {
-                        a01_ = U[i][J0sq - 1][k][_U] / (Y0sq - X[i][J0sq - 1][k][_Y]);
-                        a02_ = (Y0sq - X[i][j][k][_Y]) * sqrt(RE * fabs(a01_));
-                        a03_ = 1.0 - exp(- a02_ / 25.0);
-                        if (a03_ < a03) {
-                            a03 = a03_;
-                        }
-                    }
-                    if (i >= I0sq && i <= I1sq && k >= K0sq && k <= K1sq && j >= J1sq + 1) {
-                        a01_ = U[i][J1sq + 1][k][_U] / (X[i][J1sq + 1][k][_Y] - Y1sq);
-                        a02_ = (X[i][j][k][_Y] - Y1sq) * sqrt(RE * fabs(a01_));
-                        a03_ = 1.0 - exp(- a02_ / 25.0);
-                        if (a03_ < a03) {
-                            a03 = a03_;
-                        }
-                    }
-                    a01_ = U[i][j][K1][_U] / (Z1 - X[i][j][K1][_Z]);
-                    a02_ = (Z1 - X[i][j][k][_Z]) * sqrt(RE * fabs(a01_));
-                    a03_ = 1.0 - exp(- a02_ / 25.0);
-                    if (a03_ < a03) {
-                        a03 = a03_;
-                    }
-
                     d01 = 2 * dux * dux;
                     d02 = 2 * dvy * dvy;
                     d03 = 2 * dwz * dwz;
@@ -253,7 +203,7 @@ void turb_smagorinsky(
                     d06 = (duy + dvx) * (duy + dvx);
                     D_u = sqrt(d01 + d02 + d03 + d04 + d05 + d06);
                     Del = cbrt(det);
-                    l_0 = C_s * a03 * Del;
+                    l_0 = C_s * Del;
 
                     SGS[i][j][k] = l_0 * l_0 * D_u;
                 }

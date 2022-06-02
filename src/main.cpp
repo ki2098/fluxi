@@ -253,7 +253,7 @@ int main(void) {
     bc_p_driver(P, driver_p);
     bc_p_periodic(P);
     contra(F, U, UC, UU, BU, X, KX, J);
-    turb_csm(F, U, BU, X, KX, J, SGS);
+    turb_smagorinsky(F, U, BU, X, KX, J, SGS);
 
     sprintf(fname, "./data/var.csv.%d", n_file);
     _var_out(fname);
@@ -291,7 +291,7 @@ int main(void) {
             //     goto END;
             // }
         } while (dvr > EDIV0);
-        turb_csm(F, U, BU, X, KX, J, SGS);
+        turb_smagorinsky(F, U, BU, X, KX, J, SGS);
         bc_u_wall(F, U, UT, X, HP);
 
         _p_0_avg();
